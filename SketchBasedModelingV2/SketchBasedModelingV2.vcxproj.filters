@@ -185,6 +185,9 @@
     <ClCompile Include="Shape.cpp">
       <Filter>Source Files\shapes</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowMapping.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -323,6 +326,9 @@
     </ClInclude>
     <ClInclude Include="Shape.h">
       <Filter>Source Files\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapping.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

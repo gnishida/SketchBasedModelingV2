@@ -31,6 +31,8 @@ public:
 	glm::mat4 light_mvpMatrix;
 	RenderManager renderManager;
 	SketchyRenderingBuffer rb;
+	bool showWireframe;
+	bool showScopeCoordinateSystem;
 
 	cga::CGA system;
 

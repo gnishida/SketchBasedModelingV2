@@ -187,6 +187,7 @@
     <ClCompile Include="RuleParser.cpp" />
     <ClCompile Include="SetupProjectionOperator.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShadowMapping.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="ShapeLOperator.cpp" />
     <ClCompile Include="SizeOperator.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="RuleParser.h" />
     <ClInclude Include="SetupProjectionOperator.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShadowMapping.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="ShapeLOperator.h" />
     <ClInclude Include="SizeOperator.h" />

@@ -1,84 +1,68 @@
 #version 330
 
 // varying variables
-in vec3 vColor;
-in vec3 vTexCoord;
-in vec3 vNormal;
-in vec3 vPosition;
+in vec3 fColor;
+in vec3 fTexCoord;
+in vec3 fNormal;
+in vec3 fPosition;
+noperspective in vec3 dist;
 
 // output color
 out vec4 outputF;
 
-uniform int pass;	// 1 -- 1st pass / 2 -- 2nd pass
-
 // uniform variables
 uniform int textureEnabled;	// 0 -- color / 1 -- texture
 uniform sampler2D tex0;
+uniform int wireframeEnalbed; // 0 -- no wireframe / 1 -- add wireframe
 
+uniform int shadowState;	// 1 -- normal / 2 -- shadow
+uniform mat4 light_mvpMatrix;
 uniform vec3 lightDir;
-uniform sampler2D normalMap;
-uniform sampler2D depthMap;
-uniform int screenWidth;
-uniform int screenHeight;
+uniform sampler2D shadowMap;
 
-
-void main() {
-	if (pass == 1) {
-		outputF = vec4((vNormal + 1) * 0.5, 1);
-	} else {
-		// for color mode
-		outputF = vec4(vColor, 1.0);
-
-		float diff = 0;
-		int range = 1;
-
-		{
-			float sx = gl_FragCoord.x;
-			float sy = gl_FragCoord.y;
-			float sz = gl_FragCoord.z;
-
-			// difference in normal between this pixel and the neighbor pixels
-			vec3 n = texture(normalMap, vec2(sx / screenWidth, sy / screenHeight)).xyz;
-			float d = texture(depthMap, vec2(sx / screenWidth, sy / screenHeight)).x;
-
-			for (int xx = -range; xx <= range; ++xx) {
-				for (int yy = -range; yy <= range; ++yy) {
-					if (xx == 0 && yy == 0) continue;
-
-					vec3 nn = texture(normalMap, vec2((sx+xx) / screenWidth, (sy+yy) / screenHeight)).xyz;
-					if (nn.x == 0 && nn.y == 0 && nn.z == 0) {
-						diff = 1.0;
-					} else {
-						diff = max(diff, length(nn - n));
-					}
-
-					float dd = texture(depthMap, vec2((sx+xx) / screenWidth, (sy+yy) / screenHeight)).x;
-					diff = max(diff, abs(dd - d) * 1000);
-				}
-			}
-		}
-
-		diff = min(1, diff);
-		if (diff < 0.05) {
-			diff = 0;
-		} else {
-			diff = 1;
-		}
-		outputF = outputF * vec4(1 - diff, 1 - diff, 1 - diff, 1);
-		
-		return;
-
+float shadowCoef(){
+	vec4 shadow_coord2 = light_mvpMatrix * vec4(fPosition, 1.0);
+	vec3 ProjCoords = shadow_coord2.xyz / shadow_coord2.w;
+	vec2 UVCoords;
+	UVCoords.x = 0.5 * ProjCoords.x + 0.5;
+    UVCoords.y = 0.5 * ProjCoords.y + 0.5;
+    float z = 0.5 * ProjCoords.z + 0.5;
 	
+	float visibility = 1.0f;
+	if (texture2D(shadowMap, UVCoords).z  <  z) {
+		visibility = 0;
+	}
+	return visibility;
+}
 
-		if (textureEnabled == 1) { // for texture mode
-			outputF = texture(tex0, vTexCoord.rg);
-		}
+void main()
+{
+	// for color mode
+	outputF = vec4(fColor, 1.0);
 
-		// lighting
-		vec4 ambient = vec4(0.3, 0.3, 0.3, 1.0);
-		vec4 diffuse = vec4(0.7, 0.7, 0.7, 1.0) * max(0.0, dot(-lightDir, vNormal));
+	// determine frag distance to closest edge
+	float nearD = min(min(dist[0],dist[1]),dist[2]);
+	float edgeIntensity = exp2(-1.0*nearD*nearD);
 
-		outputF = (ambient + diffuse) * outputF;
+	// shadow
+	if (shadowState == 2) {
+		return;
+	}
+
+	if (textureEnabled == 1) { // for texture mode
+		outputF = outputF * texture(tex0, fTexCoord.rg);
+	}
+
+	// lighting
+	vec4 ambient = vec4(0.5, 0.5, 0.5, 1.0);
+	vec4 diffuse = vec4(0.8, 0.8, 0.8, 1.0) * max(0.0, dot(-lightDir, fNormal));
+
+	float shadow_coef = 0.95;
+	shadow_coef= shadowCoef();
+	outputF = (ambient + (shadow_coef + 0.05) * diffuse) * outputF;
+
+	if (wireframeEnalbed == 1) {
+		outputF = edgeIntensity * vec4(0.05, 0.05, 0.05, 1.0) + (1.0 - edgeIntensity) * outputF;
 	}
 }
 

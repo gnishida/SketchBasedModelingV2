@@ -11,11 +11,11 @@ GLWidget3D::GLWidget3D(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers
 
 	// 光源位置をセット
 	// ShadowMappingは平行光源を使っている。この位置から原点方向を平行光源の方向とする。
-	light_dir = glm::normalize(glm::vec3(-0.1, -0.2, -1));
+	light_dir = glm::normalize(glm::vec3(-4, -5, -8));
 
 	// シャドウマップ用のmodel/view/projection行列を作成
-	glm::mat4 light_pMatrix = glm::ortho<float>(-200, 200, -200, 200, 0.1, 5000);
-	glm::mat4 light_mvMatrix = glm::lookAt(-light_dir * 200.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	glm::mat4 light_pMatrix = glm::ortho<float>(-100, 100, -100, 100, 0.1, 200);
+	glm::mat4 light_mvMatrix = glm::lookAt(-light_dir * 50.0f, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	light_mvpMatrix = light_pMatrix * light_mvMatrix;
 
 	// initialize keys
@@ -48,7 +48,11 @@ void GLWidget3D::drawScene(int drawMode) {
 		glUniform1i(glGetUniformLocation(renderManager.program,"shadowState"), 2);
 	}
 
-	renderManager.renderAll(true);
+	if (showScopeCoordinateSystem) {
+		renderManager.renderAll(showWireframe);
+	} else {
+		renderManager.renderAllExcept("axis", showWireframe);
+	}
 }
 
 void GLWidget3D::drawLineTo(const QPoint &endPoint) {
@@ -312,24 +316,25 @@ void GLWidget3D::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void GLWidget3D::initializeGL() {
-	renderManager.init("../shaders/vertex.glsl", "", "../shaders/fragment.glsl");
-	rb.init(renderManager.program, 4, 5, width(), height());
+	renderManager.init("../shaders/vertex.glsl", "../shaders/geometry.glsl", "../shaders/fragment.glsl", 8192);
+	showWireframe = true;
+	showScopeCoordinateSystem = false;
 
-	// 光源位置をセット
-	// ShadowMappingは平行光源を使っている。この位置から原点方向を平行光源の方向とする。
-	light_dir = glm::normalize(glm::vec3(-0.1, -0.2, -1));
+	rb.init(renderManager.program, 4, 5, width(), height());
 
 	std::vector<Vertex> vertices;
 	glm::mat4 mat = glm::translate(glm::mat4(), glm::vec3(0, -1, 0));
-	mat = glm::rotate(mat, (float)(M_PI * 0.5f), glm::vec3(1, 0, 0));
-	glutils::drawQuad(200, 200, glm::vec3(1.0, 1.0, 1.0), mat, vertices);
-	//glutils::drawGrid(200, 200, 10, glm::vec3(0.3, 0.6, 0.8), glm::vec3(1, 1, 1), glm::rotate(glm::mat4(), (float)(M_PI * 0.5f), glm::vec3(1, 0, 0)), vertices);
+	mat = glm::rotate(mat, (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0));
+	//glutils::drawQuad(100, 100, glm::vec3(1.0, 1.0, 1.0), mat, vertices);
+	glutils::drawGrid(100, 100, 2, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mat, vertices);
+	//glutils::drawGrid(60, 60, 1, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::rotate(glm::mat4(), -3.1415926f * 0.5f, glm::vec3(1, 0, 0)), vertices);
+
 	renderManager.addObject("grid", "", vertices);
 
 
 	// CGA initial mass
 	std::list<cga::Shape*> stack;
-	cga::Rectangle* lot = new cga::Rectangle("Lot", glm::rotate(glm::mat4(), -3.141592f * 0.5f, glm::vec3(1, 0, 0)), glm::mat4(), 20, 35, glm::vec3(1, 1, 1));
+	cga::Rectangle* lot = new cga::Rectangle("Lot", glm::translate(glm::rotate(glm::mat4(), (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0)), glm::vec3(-10, -17.5, 0)), glm::mat4(), 20, 35, glm::vec3(1, 1, 1));
 	stack.push_back(lot);
 
 	try {
@@ -355,6 +360,9 @@ void GLWidget3D::paintEvent(QPaintEvent *event) {
 
 	glUseProgram(renderManager.program);
 
+	renderManager.updateShadowMap(this, light_dir, light_mvpMatrix);
+	glClearColor(0.443, 0.439, 0.458, 0.0);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
@@ -364,11 +372,12 @@ void GLWidget3D::paintEvent(QPaintEvent *event) {
 	glUniformMatrix4fv(glGetUniformLocation(renderManager.program, "mvMatrix"),  1, GL_FALSE, &camera.mvMatrix[0][0]);
 
 	// pass the light direction to the shader
-	glUniform1fv(glGetUniformLocation(renderManager.program, "lightDir"), 3, &light_dir[0]);
+	//glUniform1fv(glGetUniformLocation(renderManager.program, "lightDir"), 3, &light_dir[0]);
+	glUniform3f(glGetUniformLocation(renderManager.program, "lightDir"), light_dir.x, light_dir.y, light_dir.z);
 	
-	rb.pass1();
-	drawScene(0);
-	rb.pass2();
+	//rb.pass1();
+	//drawScene(0);
+	//rb.pass2();
 	drawScene(0);
 
 	// OpenGLの設定を元に戻す

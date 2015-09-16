@@ -64,7 +64,7 @@ void GeometryObject::createVAO() {
 RenderManager::RenderManager() {
 }
 
-void RenderManager::init(const std::string& vertex_file, const std::string& geometry_file, const std::string& fragment_file) {
+void RenderManager::init(const std::string& vertex_file, const std::string& geometry_file, const std::string& fragment_file, int shadowMapSize) {
 	// init glew
 	GLenum err = glewInit();
 	if (err != GLEW_OK) {
@@ -84,6 +84,8 @@ void RenderManager::init(const std::string& vertex_file, const std::string& geom
 	// これにより、実際に使われるtexture idは1以上の値となる
 	GLuint texId;
 	glGenTextures(1, &texId);
+
+	shadow.init(program, shadowMapSize, shadowMapSize);
 }
 
 void RenderManager::addObject(const QString& object_name, const QString& texture_file, const std::vector<Vertex>& vertices) {
@@ -134,6 +136,14 @@ void RenderManager::renderAll(bool wireframe) {
 	}
 }
 
+void RenderManager::renderAllExcept(const QString& object_name, bool wireframe) {
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
+		if (it.key() == object_name) continue;
+
+		render(it.key(), wireframe);
+	}
+}
+
 void RenderManager::render(const QString& object_name, bool wireframe) {
 	for (auto it = objects[object_name].begin(); it != objects[object_name].end(); ++it) {
 		GLuint texId = it.key();
@@ -162,6 +172,10 @@ void RenderManager::render(const QString& object_name, bool wireframe) {
 
 		glBindVertexArray(0);
 	}
+}
+
+void RenderManager::updateShadowMap(GLWidget3D* glWidget3D, const glm::vec3& light_dir, const glm::mat4& light_mvpMatrix) {
+	shadow.update(glWidget3D, light_dir, light_mvpMatrix);
 }
 
 GLuint RenderManager::loadTexture(const QString& filename) {
