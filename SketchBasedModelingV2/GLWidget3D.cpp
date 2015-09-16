@@ -48,10 +48,7 @@ void GLWidget3D::drawScene(int drawMode) {
 		glUniform1i(glGetUniformLocation(renderManager.program,"shadowState"), 2);
 	}
 
-	//renderManager.renderAll(true);
-	renderManager.render("axis");
-	renderManager.render("grid");
-	renderManager.render("face", true);
+	renderManager.renderAll(true);
 }
 
 void GLWidget3D::drawLineTo(const QPoint &endPoint) {
