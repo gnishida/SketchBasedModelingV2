@@ -5,9 +5,9 @@
 #include "SketchyRenderingBuffer.h"
 #include <QPen>
 #include <QGLWidget>
+#include "CGA.h"
 #include <QtGui>
 #include "Camera.h"
-#include "CGA.h"
 #include "PointCloud.h"
 
 class Stroke {

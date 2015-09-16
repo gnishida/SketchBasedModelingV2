@@ -1,5 +1,9 @@
 ﻿#include "GLWidget3D.h"
 #include <iostream>
+#include "RuleParser.h"
+
+#include "Rectangle.h"
+#include "Polygon.h"
 #include "GLUtils.h"
 
 GLWidget3D::GLWidget3D(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent) {
@@ -333,7 +337,7 @@ void GLWidget3D::initializeGL() {
 
 	try {
 		cga::RuleSet ruleSet;
-		cga::parseRule("..\cga\simpleMass.xml", ruleSet);
+		cga::parseRule("../cga/simpleMass.xml", ruleSet);
 		system.generate(&renderManager, ruleSet, stack, true);
 	} catch (const char* ex) {
 		std::cout << "ERROR:" << std::endl << ex << std::endl;
