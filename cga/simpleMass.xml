@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<rules version="2010.3" author="andi">
+	<!-- Attributes -->
+	<attr name="bldg_height" value="11"/>
+	
+	<!-- Initial Shape starting rule -->
+	<rule name="Lot">
+		<extrude height="bldg_height"/>
+		<copy name="Building"/>
+	</rule>
+	
+	<!-- split the building geometry into its facade components -->
+	<rule name="Building">
+		<comp>
+			<param name="front" value="FrontFacade"/>
+			<param name="side" value="SideFacade"/>
+			<param name="top" value="Roof"/>
+		</comp>
+	</rule>
+	
+</rules>
