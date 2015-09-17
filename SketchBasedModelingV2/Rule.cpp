@@ -7,7 +7,7 @@
 
 namespace cga {
 
-float Value::getEstimateValue(float size, const RuleSet& ruleSet, Shape* shape) const {
+float Value::getEstimateValue(float size, const RuleSet& ruleSet, const boost::shared_ptr<Shape>& shape) const {
 	if (type == Value::TYPE_ABSOLUTE) {
 		return ruleSet.evalFloat(value, shape);
 	} else if (type == Value::TYPE_RELATIVE) {
@@ -17,7 +17,15 @@ float Value::getEstimateValue(float size, const RuleSet& ruleSet, Shape* shape) 
 	}
 }
 
-void Rule::apply(Shape* shape, const RuleSet& ruleSet, std::list<Shape*>& stack) const {
+/**
+ * このルールを指定されたshapeに適用する。
+ * いくつかのオペレーション (compやsplitなど)は、適用後のshapeをstackに格納する。
+ *
+ * @param shape		shape
+ * @param ruleSet	全ルール
+ * @param stack		stack
+ */
+void Rule::apply(boost::shared_ptr<Shape>& shape, const RuleSet& ruleSet, std::list<boost::shared_ptr<Shape> >& stack) const {
 	for (int i = 0; i < operators.size(); ++i) {
 		shape = operators[i]->apply(shape, ruleSet, stack);
 		if (shape == NULL) break;
@@ -25,9 +33,13 @@ void Rule::apply(Shape* shape, const RuleSet& ruleSet, std::list<Shape*>& stack)
 	
 	if (shape != NULL) {
 		if (operators.size() == 0 || operators.back()->name == "copy") {
-			delete shape;
-			shape = NULL;
+			// copyで終わる場合、このshapeはもう必要ないので削除
+			//delete shape;
+			//shape = NULL;
+			shape = boost::shared_ptr<Shape>();
 		} else {
+			// copyで終わらない場合、このshapeは描画する必要があるので、残す。
+			// 同じ名前でstackに格納すると無限再帰してしまうため、末尾に!を付加した名前にして格納する。
 			std::stringstream ss;
 			ss << shape->_name << "!";
 			shape->_name = ss.str();
@@ -37,7 +49,7 @@ void Rule::apply(Shape* shape, const RuleSet& ruleSet, std::list<Shape*>& stack)
 }
 
 /**
- * 指定されたsizeをsplitする後の、各断片のサイズを計算する。
+ * 指定されたsizeをsplitした後の、各断片のサイズを計算する。
  *
  * @param size							もとのsize
  * @param sizes							指定された、各断片のサイズ
@@ -46,7 +58,7 @@ void Rule::apply(Shape* shape, const RuleSet& ruleSet, std::list<Shape*>& stack)
  * @param decoded_sizes	[OUT]			計算された、各断片のサイズ
  * @param decoded_output_names [OUT]	計算された、各断片の名前
  */
-void Rule::decodeSplitSizes(float size, const std::vector<Value>& sizes, const std::vector<std::string>& output_names, const RuleSet& ruleSet, Shape* shape, std::vector<float>& decoded_sizes, std::vector<std::string>& decoded_output_names) {
+void Rule::decodeSplitSizes(float size, const std::vector<Value>& sizes, const std::vector<std::string>& output_names, const RuleSet& ruleSet, const boost::shared_ptr<Shape>& shape, std::vector<float>& decoded_sizes, std::vector<std::string>& decoded_output_names) {
 	float regular_sum = 0.0f;
 	float floating_sum = 0.0f;
 	int repeat_count = 0;
@@ -99,19 +111,43 @@ bool RuleSet::contain(const std::string& name) const {
 	else return true;
 }
 
+/**
+ * 変数とその値を追加する。
+ *
+ * @param name		変数名
+ * @param value		値
+ */
 void RuleSet::addAttr(const std::string& name, const std::string& value) {
 	attrs[name] = value;
 }
 
+/**
+ * ルールを追加する。
+ *
+ * @param name		ルール名 (左辺に来るnonterminalの名前)
+ */
 void RuleSet::addRule(const std::string& name) {
 	rules[name].operators.clear();
 }
 
-void RuleSet::addOperator(const std::string& name, Operator* op) {
+/**
+ * ルールにオペレーションを追加する。
+ *
+ * @param name		ルール名
+ * @param op		オペレーション
+ */
+void RuleSet::addOperator(const std::string& name, const boost::shared_ptr<Operator>& op) {
 	rules[name].operators.push_back(op);
 }
 
-float RuleSet::evalFloat(const std::string& attr_name, Shape* shape) const {
+/**
+ * 指定された変数を、数値に変換する。
+ *
+ * @param attr_name		変数名
+ * @param shape			shape
+ * @return				変換された数値
+ */
+float RuleSet::evalFloat(const std::string& attr_name, const boost::shared_ptr<Shape>& shape) const {
 	// To be fixed
 	// 置換だと、変数BCが、変数ABCを置換してしまう。
 	// 対策は？
@@ -133,7 +169,14 @@ float RuleSet::evalFloat(const std::string& attr_name, Shape* shape) const {
 	return calculate(decoded_str);
 }
 
-std::string RuleSet::evalString(const std::string& attr_name, Shape* shape) const {
+/**
+ * 指定された変数を、文字列に変換する。
+ *
+ * @param attr_name		変数名
+ * @param shape			shape
+ * @return				変換された文字列
+ */
+std::string RuleSet::evalString(const std::string& attr_name, const boost::shared_ptr<Shape>& shape) const {
 	if (attrs.find(attr_name) == attrs.end()) {
 		return attr_name;
 	} else {

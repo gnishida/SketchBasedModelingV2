@@ -1,10 +1,10 @@
 ﻿#include "GableRoof.h"
-#include <boost/shared_ptr.hpp>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/create_straight_skeleton_2.h>
 #include "GLUtils.h"
 #include "Polygon.h"
+#include "CGA.h"
 #include "GeneralObject.h"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
@@ -25,13 +25,13 @@ GableRoof::GableRoof(const std::string& name, const glm::mat4& pivot, const glm:
 	this->_color = color;
 }
 
-Shape* GableRoof::clone(const std::string& name) {
-	Shape* copy = new GableRoof(*this);
+boost::shared_ptr<Shape> GableRoof::clone(const std::string& name) const {
+	boost::shared_ptr<Shape> copy = boost::shared_ptr<Shape>(new GableRoof(*this));
 	copy->_name = name;
 	return copy;
 }
 
-void GableRoof::comp(const std::map<std::string, std::string>& name_map, std::vector<Shape*>& shapes) {
+void GableRoof::comp(const std::map<std::string, std::string>& name_map, std::vector<boost::shared_ptr<Shape> >& shapes) {
 	Polygon_2 poly;
 	for (int i = 0; i < _points.size(); ++i) {
 		poly.push_back(KPoint(_points[i].x, _points[i].y));
@@ -128,7 +128,7 @@ void GableRoof::comp(const std::map<std::string, std::string>& name_map, std::ve
 						pts2d.push_back(glm::vec2(inv * glm::vec4(prev_p, 1)));
 						pts2d.push_back(glm::vec2(pts2d[1].x * 0.5, z));
 
-						shapes.push_back(new Polygon(name_map.at("vertical"), _pivot, _modelMat * mat, pts2d, _color, _texture));
+						shapes.push_back(boost::shared_ptr<Shape>(new Polygon(name_map.at("vertical"), _pivot, _modelMat * mat, pts2d, _color, _texture)));
 					} else if (num_edges[count] > 3 && name_map.find("top") != name_map.end() && name_map.at("top") != "NIL") {
 						std::vector<glm::vec3> pts3d;
 						std::vector<glm::vec3> normals;
@@ -139,7 +139,7 @@ void GableRoof::comp(const std::map<std::string, std::string>& name_map, std::ve
 						normals.push_back(n);
 						normals.push_back(n);
 						normals.push_back(n);
-						shapes.push_back(new GeneralObject(name_map.at("top"), _pivot, _modelMat, pts3d, normals, _color));
+						shapes.push_back(boost::shared_ptr<Shape>(new GeneralObject(name_map.at("top"), _pivot, _modelMat, pts3d, normals, _color)));
 					}
 	
 					prev_p = glm::vec3(p2, z);
@@ -149,7 +149,7 @@ void GableRoof::comp(const std::map<std::string, std::string>& name_map, std::ve
 	}
 }
 
-void GableRoof::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) {
+void GableRoof::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
 	std::vector<Vertex> vertices;
 
 	Polygon_2 poly;

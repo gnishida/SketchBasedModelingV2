@@ -6,6 +6,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include "Vertex.h"
 #include "Rule.h"
+#include "Shape.h"
 
 namespace cga {
 
@@ -18,32 +19,6 @@ enum { SELECTOR_ALL = 0, SELECTOR_INSIDE, SELECTOR_BORDER };
 enum { AXES_SELECTOR_XYZ = 0, AXES_SELECTOR_X, AXES_SELECTOR_Y, AXES_SELECTOR_Z, AXES_SELECTOR_XY, AXES_SELECTOR_XZ, AXES_SELECTOR_YZ };
 
 const float M_PI = 3.1415926f;
-//float M_PI = 3.1415926f;
-
-class BoundingBox {
-public:
-	glm::vec3 minPt;
-	glm::vec3 maxPt;
-
-public:
-	BoundingBox(const std::vector<glm::vec2>& points);
-	BoundingBox(const std::vector<glm::vec3>& points);
-	float sx() { return maxPt.x - minPt.x; }
-	float sy() { return maxPt.y - minPt.y; }
-	float sz() { return maxPt.z - minPt.z; }
-};
-
-class Asset {
-public:
-	std::vector<glm::vec3> points;
-	std::vector<glm::vec3> normals;
-	std::vector<glm::vec2> texCoords;
-	//BoundingBox bbox;
-
-public:
-	Asset();
-	Asset(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& texCoords);
-};
 
 class CGA {
 public:
@@ -52,7 +27,7 @@ public:
 public:
 	CGA();
 
-	void generate(RenderManager* renderManager, const RuleSet& ruleSet, std::list<Shape*> stack, bool showScopeCoordinateSystem = false);
+	void generate(RenderManager* renderManager, const RuleSet& ruleSet, std::list<boost::shared_ptr<Shape> >& stack, bool showScopeCoordinateSystem = false);
 };
 
 }

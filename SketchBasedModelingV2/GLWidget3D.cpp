@@ -333,9 +333,9 @@ void GLWidget3D::initializeGL() {
 
 
 	// CGA initial mass
-	std::list<cga::Shape*> stack;
+	std::list<boost::shared_ptr<cga::Shape> > stack;
 	cga::Rectangle* lot = new cga::Rectangle("Lot", glm::translate(glm::rotate(glm::mat4(), (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0)), glm::vec3(-10, -17.5, 0)), glm::mat4(), 20, 35, glm::vec3(1, 1, 1));
-	stack.push_back(lot);
+	stack.push_back(boost::shared_ptr<cga::Shape>(lot));
 
 	try {
 		cga::RuleSet ruleSet;
@@ -345,7 +345,7 @@ void GLWidget3D::initializeGL() {
 		std::cout << "ERROR:" << std::endl << ex << std::endl;
 	}
 
-
+	renderManager.updateShadowMap(this, light_dir, light_mvpMatrix);
 
 
 	currentStroke = NULL;
@@ -360,7 +360,7 @@ void GLWidget3D::paintEvent(QPaintEvent *event) {
 
 	glUseProgram(renderManager.program);
 
-	renderManager.updateShadowMap(this, light_dir, light_mvpMatrix);
+	//renderManager.updateShadowMap(this, light_dir, light_mvpMatrix);
 	glClearColor(0.443, 0.439, 0.458, 0.0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

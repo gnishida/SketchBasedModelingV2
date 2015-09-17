@@ -1,8 +1,8 @@
 ﻿#include "HipRoof.h"
-#include <boost/shared_ptr.hpp>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/create_straight_skeleton_2.h>
+#include "CGA.h"
 #include "GLUtils.h"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
@@ -23,13 +23,13 @@ HipRoof::HipRoof(const std::string& name, const glm::mat4& pivot, const glm::mat
 	this->_color = color;
 }
 
-Shape* HipRoof::clone(const std::string& name) {
-	Shape* copy = new HipRoof(*this);
+boost::shared_ptr<Shape> HipRoof::clone(const std::string& name) const {
+	boost::shared_ptr<Shape> copy = boost::shared_ptr<Shape>(new HipRoof(*this));
 	copy->_name = name;
 	return copy;
 }
 
-void HipRoof::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) {
+void HipRoof::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
 	std::vector<Vertex> vertices;
 
 	Polygon_2 poly;
