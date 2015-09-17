@@ -49,7 +49,7 @@ void GeneralObject::size(float xSize, float ySize, float zSize) {
 	}
 }
 
-void GeneralObject::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
+void GeneralObject::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
 	std::vector<Vertex> vertices(_points.size());
@@ -62,7 +62,7 @@ void GeneralObject::generate(RenderManager* renderManager, bool showScopeCoordin
 		}
 	}
 
-	renderManager->addObject(_name.c_str(), _texture.c_str(), vertices);
+	renderManager->addObject(name.c_str(), _texture.c_str(), vertices);
 
 	if (showScopeCoordinateSystem) {
 		drawAxes(renderManager, _pivot * _modelMat);

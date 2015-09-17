@@ -194,6 +194,12 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Source Files\shapes</Filter>
     </ClCompile>
+    <ClCompile Include="Face.cpp">
+      <Filter>Source Files\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Stroke3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -341,6 +347,12 @@
     </ClInclude>
     <ClInclude Include="BoundingBox.h">
       <Filter>Source Files\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Face.h">
+      <Filter>Source Files\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Stroke3D.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

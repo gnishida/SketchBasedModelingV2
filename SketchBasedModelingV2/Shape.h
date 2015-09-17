@@ -7,10 +7,14 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include "Asset.h"
+#include "Face.h"
+#include "Stroke3D.h"
 
 class RenderManager;
 
 namespace cga {
+
+class RuleSet;
 
 class Shape {
 public:
@@ -46,7 +50,10 @@ public:
 	virtual boost::shared_ptr<Shape> taper(const std::string& name, float height, float top_ratio = 0.0f);
 	void texture(const std::string& tex);
 	void translate(int mode, int coordSystem, float x, float y, float z);
-	virtual void generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const;
+	virtual void render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const;
+
+	virtual bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist);
+	virtual void findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet);
 
 protected:
 	void drawAxes(RenderManager* renderManager, const glm::mat4& modelMat) const;

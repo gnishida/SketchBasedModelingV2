@@ -8,6 +8,9 @@
 #include "Cuboid.h"
 #include "OffsetPolygon.h"
 #include "CGA.h"
+#include "Face.h"
+#include <boost/lexical_cast.hpp>
+#include "SplitOperator.h"
 
 namespace cga {
 
@@ -178,7 +181,7 @@ boost::shared_ptr<Shape> Rectangle::taper(const std::string& name, float height,
 	return boost::shared_ptr<Shape>(new Pyramid(name, _pivot, _modelMat, points, glm::vec2(_scope.x * 0.5, _scope.y * 0.5), height, top_ratio, _color, _texture));
 }
 
-void Rectangle::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
+void Rectangle::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
 	std::vector<Vertex> vertices;
@@ -206,7 +209,7 @@ void Rectangle::generate(RenderManager* renderManager, bool showScopeCoordinateS
 		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), _color, _texCoords[2]);
 		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), _color, _texCoords[3]);
 
-		renderManager->addObject(_name.c_str(), _texture.c_str(), vertices);
+		renderManager->addObject(name.c_str(), _texture.c_str(), vertices);
 	} else {
 		vertices[0] = Vertex(glm::vec3(p1), glm::vec3(normal), _color);
 		vertices[1] = Vertex(glm::vec3(p2), glm::vec3(normal), _color);
@@ -216,13 +219,81 @@ void Rectangle::generate(RenderManager* renderManager, bool showScopeCoordinateS
 		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), _color);
 		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), _color);
 
-		renderManager->addObject(_name.c_str(), "", vertices);
+		renderManager->addObject(name.c_str(), "", vertices);
 	}
 	
 	if (showScopeCoordinateSystem) {
 		vertices.resize(0);
 		glutils::drawAxes(0.1, 3, _pivot * _modelMat, vertices);
 		renderManager->addObject("axis", "", vertices);
+	}
+}
+
+bool Rectangle::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist) {
+	std::vector<glm::vec3> points;
+
+	glm::vec4 p1(0, 0, 0, 1);
+	points.push_back(glm::vec3(_pivot * _modelMat * p1));
+	glm::vec4 p2(_scope.x, 0, 0, 1);
+	points.push_back(glm::vec3(_pivot * _modelMat * p2));
+	glm::vec4 p3(_scope.x, _scope.y, 0, 1);
+	points.push_back(glm::vec3(_pivot * _modelMat * p3));
+	glm::vec4 p4(0, _scope.y, 0, 1);
+	points.push_back(glm::vec3(_pivot * _modelMat * p4));
+
+	glm::vec3 normal = glm::vec3(_pivot * _modelMat * glm::vec4(0, 0, 1, 0));
+
+	glm::vec3 intPt;
+	dist = (std::numeric_limits<float>::max)();
+	bool hit = false;
+
+	for (int k = 1; k < points.size() - 1; ++k) {
+		if (glutils::rayTriangleIntersection(cameraPos, viewDir, points[0], points[k], points[k+1], intPt)) {
+			float d = glm::length(intPt - cameraPos);
+			if (d < dist) {
+				hit = true;
+				dist = d;
+				face = Face(this, points, normal, _color, _texCoords);
+			}
+		}
+	}
+
+	return hit;
+}
+
+void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet) {
+	glm::mat4 mat = _pivot * _modelMat;
+	mat = glm::inverse(mat);
+
+	for (int i = 0; i < strokes3D.size(); ++i) {
+		glm::vec3 p1 = glm::vec3(mat * glm::vec4(strokes3D[i].p1, 1));
+		glm::vec3 p2 = glm::vec3(mat * glm::vec4(strokes3D[i].p2, 1));
+
+		// split(y)?
+		if (p1.x < _scope.x * 0.2 && p2.x > _scope.x * 0.8 && fabs(p1.y - p2.y) < _scope.y * 0.3) {
+			float y = (p1.y + p2.y) * 0.5f;
+			if (y < _scope.y * 0.5f) {
+				// this line specifies the height of the first floor
+				ruleSet->addRule(_name);
+				std::string size = boost::lexical_cast<std::string>(y);
+				std::vector<Value> sizes;
+				sizes.push_back(Value(Value::TYPE_FLOATING, size, true));
+
+				std::vector<std::string> names;
+				names.push_back("Floor");
+				ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
+			} else {
+				// this line specifies the height of the top floor
+				ruleSet->addRule(_name);
+				std::string size = boost::lexical_cast<std::string>(_scope.y - y);
+				std::vector<Value> sizes;
+				sizes.push_back(Value(Value::TYPE_FLOATING, size, true));
+
+				std::vector<std::string> names;
+				names.push_back("Floor");
+				ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
+			}
+		}
 	}
 }
 

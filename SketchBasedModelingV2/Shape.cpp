@@ -183,8 +183,16 @@ void Shape::translate(int mode, int coordSystem, float x, float y, float z) {
 	}
 }
 
-void Shape::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
-	throw "generate() is not supported.";
+void Shape::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
+	throw "render() is not supported.";
+}
+
+bool Shape::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist) {
+	throw "hitFace() is not supported.";
+}
+
+void Shape::findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet) {
+	throw "findRule() is not supported.";
 }
 
 void Shape::drawAxes(RenderManager* renderManager, const glm::mat4& modelMat) const {

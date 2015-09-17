@@ -9,6 +9,7 @@
 #include <QtGui>
 #include "Camera.h"
 #include "PointCloud.h"
+#include "Stroke3D.h"
 
 class Stroke {
 public:
@@ -34,7 +35,7 @@ public:
 	bool showWireframe;
 	bool showScopeCoordinateSystem;
 
-	cga::CGA system;
+	cga::CGA cga_system;
 
 	bool ctrlPressed;
 	QPoint lastPoint;
@@ -50,8 +51,8 @@ public:
 	void keyReleaseEvent(QKeyEvent* e);
 	void drawScene(int drawMode);
 	void drawLineTo(const QPoint &endPoint);
-	void resizeSketch(int width, int height);
-	bool compute3dCoordinates(Stroke* stroke);
+
+	void inferRuleFromSketch();
 	glm::vec3 unprojectByPlane(const glm::vec2& point, const glm::vec3& face_point, const glm::vec3& face_normal);
 	glm::vec3 unprojectByLine(const glm::vec2& point, const glm::vec3& reference_point, const glm::vec3& vec);
 	glm::vec2 normalizeScreenCoordinates(const glm::vec2& point);

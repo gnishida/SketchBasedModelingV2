@@ -115,7 +115,7 @@ void Cuboid::split(int splitAxis, const std::vector<float>& sizes, const std::ve
 	}
 }
 
-void Cuboid::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
+void Cuboid::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
 	int num = 0;
@@ -158,7 +158,7 @@ void Cuboid::generate(RenderManager* renderManager, bool showScopeCoordinateSyst
 		glutils::drawQuad(_scope.y, _scope.z, _color, mat, vertices);
 	}
 
-	renderManager->addObject(_name.c_str(), "", vertices);
+	renderManager->addObject(name.c_str(), "", vertices);
 
 	if (showScopeCoordinateSystem) {
 		drawAxes(renderManager, _pivot * _modelMat);

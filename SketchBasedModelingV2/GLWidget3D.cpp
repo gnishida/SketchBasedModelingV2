@@ -1,10 +1,10 @@
 ﻿#include "GLWidget3D.h"
 #include <iostream>
 #include "RuleParser.h"
-
 #include "Rectangle.h"
 #include "Polygon.h"
 #include "GLUtils.h"
+#include "Face.h"
 
 GLWidget3D::GLWidget3D(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent) {
 	setAutoFillBackground(false);
@@ -28,6 +28,9 @@ void GLWidget3D::keyPressEvent(QKeyEvent *e) {
 	switch (e->key()) {
 	case Qt::Key_Control:
 		ctrlPressed = true;
+		break;
+	case Qt::Key_Space:
+		inferRuleFromSketch();
 		break;
 	default:
 		break;
@@ -61,27 +64,49 @@ void GLWidget3D::drawLineTo(const QPoint &endPoint) {
 	lastPoint = endPoint;
 }
 
-void GLWidget3D::resizeSketch(int width, int height) {
-/*	for (int i = 0; i < parametriclsystem::NUM_LAYERS; ++i) {
-		QImage newImage(width, height, QImage::Format_ARGB32);
-		newImage.fill(qRgba(255, 255, 255, 0));
-		QPainter painter(&newImage);
-
-		QImage img = sketch[i].scaled(width, height);
-		painter.drawImage(0, 0, img);
-		sketch[i] = newImage;
-	}*/
-}
-
-bool GLWidget3D::compute3dCoordinates(Stroke* stroke) {
+void GLWidget3D::inferRuleFromSketch() {
 	int face_index;
-	std::vector<glm::vec3> face_points;	
+	std::vector<glm::vec3> face_points;
 
 	// ワールド座標系でのカメラ座標
 	glm::vec3 cameraPos = camera.cameraPosInWorld();
 
 	// 視線ベクトル
-	glm::vec3 view_v1 = viewVector(stroke->points[0], camera.mvMatrix, camera.f(), camera.aspect());
+	glm::vec3 view_v1 = viewVector(strokes[0].points[0], camera.mvMatrix, camera.f(), camera.aspect());
+
+	// faceを取得
+	cga::Face face;
+	if (cga_system.hitFace(cameraPos, view_v1, face)) {
+		std::vector<Stroke3D> strokes3D;
+
+		// strokeの3d座標を計算
+		for (int i = 0; i < strokes.size(); ++i) {
+			glm::vec3 p1 = unprojectByPlane(strokes[i].points[0], face.points[0], face.normals[0]);
+			glm::vec3 p2 = unprojectByPlane(strokes[i].points.back(), face.points[0], face.normals[0]);
+		
+			strokes3D.push_back(Stroke3D(p1, p2));
+		}
+
+		// strokeから、ルールを探す
+		face.shape->findRule(strokes3D, &cga_system.ruleSet);
+
+		// CGAモデルを生成しなおす
+		cga_system.generate();
+
+		// 描画する
+		cga_system.render(&renderManager, true);
+	}
+
+
+	strokes.clear();
+
+	update();
+
+
+
+	/*
+
+
 
 	std::cout << std::endl;
 
@@ -161,10 +186,6 @@ bool GLWidget3D::compute3dCoordinates(Stroke* stroke) {
 			std::cout << "p2 snapped to " << v2 << std::endl;
 			if (v1 >= 0 && v2 >= 0) {
 				glm::vec3 p12 = (p1 + p2) * 0.5f;
-				/*
-				glm::vec3 normal = glm::normalize(p2 - p1);
-				glm::vec3 p3 = unprojectByPlane(midPt, p12, normal);
-				*/
 				glm::vec3 p3 = unprojectByLine(midPt, p12, glm::vec3(0, 1, 0)); // デモ用に、垂直方向の三角形のみ対応
 				bool faceAdded1 = points.addTriangleEdge(p1, p3);
 				bool faceAdded2 = points.addTriangleEdge(p2, p3);
@@ -174,8 +195,7 @@ bool GLWidget3D::compute3dCoordinates(Stroke* stroke) {
 			}
 		}
 	}
-	
-	return false;
+	*/
 }
 
 glm::vec3 GLWidget3D::unprojectByPlane(const glm::vec2& point, const glm::vec3& face_point, const glm::vec3& face_normal) {
@@ -256,9 +276,6 @@ void GLWidget3D::clear() {
 }
 
 void GLWidget3D::resizeGL(int width, int height) {
-	// sketch imageを更新
-	resizeSketch(width, height);
-
 	// OpenGLの設定を更新
 	height = height ? height : 1;
 	glViewport(0, 0, width, height);
@@ -281,15 +298,7 @@ void GLWidget3D::mousePressEvent(QMouseEvent *e) {
 void GLWidget3D::mouseReleaseEvent(QMouseEvent *e) {
 	if (currentStroke != NULL) {
 		if (currentStroke->points.size() > 3 && glm::length(currentStroke->points.back() - currentStroke->points[0]) > 10) {
-			// compute 3d coordinates of user stroke
-			bool faceAdded = compute3dCoordinates(currentStroke);
-
-			if (faceAdded) {
-				strokes.clear();
-				points.generate(&renderManager);
-			} else {
-				strokes.push_back(*currentStroke);
-			}
+			strokes.push_back(*currentStroke);
 		}
 
 		delete currentStroke;
@@ -320,27 +329,24 @@ void GLWidget3D::initializeGL() {
 	showWireframe = true;
 	showScopeCoordinateSystem = false;
 
-	rb.init(renderManager.program, 4, 5, width(), height());
+	//rb.init(renderManager.program, 4, 5, width(), height());
 
 	std::vector<Vertex> vertices;
 	glm::mat4 mat = glm::translate(glm::mat4(), glm::vec3(0, -1, 0));
 	mat = glm::rotate(mat, (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0));
-	//glutils::drawQuad(100, 100, glm::vec3(1.0, 1.0, 1.0), mat, vertices);
 	glutils::drawGrid(100, 100, 2, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mat, vertices);
-	//glutils::drawGrid(60, 60, 1, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::rotate(glm::mat4(), -3.1415926f * 0.5f, glm::vec3(1, 0, 0)), vertices);
 
 	renderManager.addObject("grid", "", vertices);
 
 
 	// CGA initial mass
-	std::list<boost::shared_ptr<cga::Shape> > stack;
 	cga::Rectangle* lot = new cga::Rectangle("Lot", glm::translate(glm::rotate(glm::mat4(), (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0)), glm::vec3(-10, -17.5, 0)), glm::mat4(), 20, 35, glm::vec3(1, 1, 1));
-	stack.push_back(boost::shared_ptr<cga::Shape>(lot));
+	cga_system.axiom = boost::shared_ptr<cga::Shape>(lot);
 
 	try {
-		cga::RuleSet ruleSet;
-		cga::parseRule("../cga/simpleMass.xml", ruleSet);
-		system.generate(&renderManager, ruleSet, stack, true);
+		cga::parseRule("../cga/simpleMass.xml", cga_system.ruleSet);
+		cga_system.generate();
+		cga_system.render(&renderManager, true);
 	} catch (const char* ex) {
 		std::cout << "ERROR:" << std::endl << ex << std::endl;
 	}

@@ -7,6 +7,7 @@
 #include "Vertex.h"
 #include "Rule.h"
 #include "Shape.h"
+#include "Face.h"
 
 namespace cga {
 
@@ -23,11 +24,18 @@ const float M_PI = 3.1415926f;
 class CGA {
 public:
 	glm::mat4 modelMat;
+	boost::shared_ptr<Shape> axiom;
+	std::list<boost::shared_ptr<Shape> > stack;
+	std::vector<boost::shared_ptr<Shape> > shapes;
+	RuleSet ruleSet;
 
 public:
 	CGA();
 
-	void generate(RenderManager* renderManager, const RuleSet& ruleSet, std::list<boost::shared_ptr<Shape> >& stack, bool showScopeCoordinateSystem = false);
+	void generate();
+	void render(RenderManager* renderManager, bool showScopeCoordinateSystem = false);
+
+	bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face);
 };
 
 }

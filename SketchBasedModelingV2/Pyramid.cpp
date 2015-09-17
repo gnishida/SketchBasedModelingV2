@@ -114,7 +114,7 @@ void Pyramid::comp(const std::map<std::string, std::string>& name_map, std::vect
 	}
 }
 
-void Pyramid::generate(RenderManager* renderManager, bool showScopeCoordinateSystem) const {
+void Pyramid::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
 	if (_top_ratio == 0.0f) {
@@ -139,7 +139,7 @@ void Pyramid::generate(RenderManager* renderManager, bool showScopeCoordinateSys
 			p1 = p2;
 		}
 
-		renderManager->addObject(_name.c_str(), _texture.c_str(), vertices);
+		renderManager->addObject(name.c_str(), _texture.c_str(), vertices);
 	} else {
 		std::vector<Vertex> vertices(_points.size() * 6);
 
@@ -174,7 +174,7 @@ void Pyramid::generate(RenderManager* renderManager, bool showScopeCoordinateSys
 
 		glutils::drawPolygon(pts3, _color, _pivot * _modelMat, vertices);
 
-		renderManager->addObject(_name.c_str(), _texture.c_str(), vertices);
+		renderManager->addObject(name.c_str(), _texture.c_str(), vertices);
 	}
 
 	if (showScopeCoordinateSystem) {
