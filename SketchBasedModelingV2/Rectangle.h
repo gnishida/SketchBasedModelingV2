@@ -21,9 +21,9 @@ public:
 	boost::shared_ptr<Shape> extrude(const std::string& name, float height);
 	boost::shared_ptr<Shape> offset(const std::string& name, float offsetDistance, int offsetSelector);
 	void split(int splitAxis, const std::vector<float>& ratios, const std::vector<std::string>& names, std::vector<boost::shared_ptr<Shape> >& objects);
-	void render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const;
+	void render(RenderManager* renderManager, const std::string& name, float opacity, bool showScopeCoordinateSystem) const;
 	bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist);
-	void findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, CGA* cga);
+	void findRule(const std::vector<Stroke>& strokes, int sketch_step, CGA* cga);
 };
 
 }

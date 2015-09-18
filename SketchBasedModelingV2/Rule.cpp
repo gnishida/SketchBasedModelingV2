@@ -184,4 +184,13 @@ std::string RuleSet::evalString(const std::string& attr_name, const boost::share
 	}
 }
 
+void RuleSet::merge(const RuleSet& ruleSet) {
+	for (auto it = ruleSet.attrs.begin(); it != ruleSet.attrs.end(); ++it) {
+		this->attrs[it->first] = it->second;
+	}
+	for (auto it = ruleSet.rules.begin(); it != ruleSet.rules.end(); ++it) {
+		this->rules[it->first] = it->second;
+	}
+}
+
 }

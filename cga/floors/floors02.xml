@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
-<rule name="{A|B*}">
-	<split splitAxis="y">
-		<param type="absolute" value="groundf_height" name="Groundfloor"/>
-		<param type="floating" value="floor_height" name="Floor" repeat="true"/>
-	</split>
-</rule>
+<rules>
+	<rule name="Start">
+		<split splitAxis="y">
+			<param type="absolute" value="groundf_height" name="Groundfloor"/>
+			<param type="floating" value="floor_height" name="Floor" repeat="true"/>
+		</split>
+	</rule>
+</rules>

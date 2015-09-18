@@ -2,23 +2,12 @@
 #define GLWIDGET_H
 
 #include "RenderManager.h"
-#include "SketchyRenderingBuffer.h"
 #include <QPen>
 #include <QGLWidget>
 #include "CGA.h"
 #include <QtGui>
 #include "Camera.h"
-#include "PointCloud.h"
-#include "Stroke3D.h"
-
-class Stroke {
-public:
-	std::vector<glm::vec2> points;
-
-public:
-	Stroke() {}
-	Stroke(const glm::vec2& point) { points.push_back(point); }
-};
+#include "Stroke.h"
 
 class GLWidget3D : public QGLWidget {
 	Q_OBJECT
@@ -31,7 +20,6 @@ public:
 	glm::vec3 light_dir;
 	glm::mat4 light_mvpMatrix;
 	RenderManager renderManager;
-	SketchyRenderingBuffer rb;
 	bool showWireframe;
 	bool showScopeCoordinateSystem;
 
@@ -42,8 +30,6 @@ public:
 	QPoint lastPoint;
 	std::vector<Stroke> strokes;
 	Stroke* currentStroke;
-	PointCloud points;
-	std::vector<std::pair<int, int> > edges;
 
 public:
 	GLWidget3D(QWidget *parent = 0);

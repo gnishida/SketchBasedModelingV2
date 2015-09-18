@@ -5,6 +5,7 @@
 #include "Face.h"
 #include <boost/lexical_cast.hpp>
 #include "SplitOperator.h"
+#include "BoundingBox.h"
 
 namespace cga {
 
@@ -83,7 +84,7 @@ void Rectangle::split(int splitAxis, const std::vector<float>& sizes, const std:
 	}
 }
 
-void Rectangle::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
+void Rectangle::render(RenderManager* renderManager, const std::string& name, float opacity, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
 	std::vector<Vertex> vertices;
@@ -99,27 +100,34 @@ void Rectangle::render(RenderManager* renderManager, const std::string& name, bo
 	glm::vec4 p4(0, _scope.y, 0, 1);
 	p4 = _pivot * _modelMat * p4;
 
+	if (opacity < 1.0f) {
+		p1 *= explode_factor;
+		p2 *= explode_factor;
+		p3 *= explode_factor;
+		p4 *= explode_factor;
+	}
+
 	glm::vec4 normal(0, 0, 1, 0);
 	normal = _pivot * _modelMat * normal;
 
 	if (_textureEnabled) {
-		vertices[0] = Vertex(glm::vec3(p1), glm::vec3(normal), _color, _texCoords[0]);
-		vertices[1] = Vertex(glm::vec3(p2), glm::vec3(normal), _color, _texCoords[1], 1);
-		vertices[2] = Vertex(glm::vec3(p3), glm::vec3(normal), _color, _texCoords[2]);
+		vertices[0] = Vertex(glm::vec3(p1), glm::vec3(normal), glm::vec4(_color, opacity), _texCoords[0]);
+		vertices[1] = Vertex(glm::vec3(p2), glm::vec3(normal), glm::vec4(_color, opacity), _texCoords[1], 1);
+		vertices[2] = Vertex(glm::vec3(p3), glm::vec3(normal), glm::vec4(_color, opacity), _texCoords[2]);
 
-		vertices[3] = Vertex(glm::vec3(p1), glm::vec3(normal), _color, _texCoords[0]);
-		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), _color, _texCoords[2]);
-		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), _color, _texCoords[3], 1);
+		vertices[3] = Vertex(glm::vec3(p1), glm::vec3(normal), glm::vec4(_color, opacity), _texCoords[0]);
+		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), glm::vec4(_color, opacity), _texCoords[2]);
+		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), glm::vec4(_color, opacity), _texCoords[3], 1);
 
 		renderManager->addObject(name.c_str(), _texture.c_str(), vertices);
 	} else {
-		vertices[0] = Vertex(glm::vec3(p1), glm::vec3(normal), _color);
-		vertices[1] = Vertex(glm::vec3(p2), glm::vec3(normal), _color, 1);
-		vertices[2] = Vertex(glm::vec3(p3), glm::vec3(normal), _color);
+		vertices[0] = Vertex(glm::vec3(p1), glm::vec3(normal), glm::vec4(_color, opacity));
+		vertices[1] = Vertex(glm::vec3(p2), glm::vec3(normal), glm::vec4(_color, opacity), 1);
+		vertices[2] = Vertex(glm::vec3(p3), glm::vec3(normal), glm::vec4(_color, opacity));
 
-		vertices[3] = Vertex(glm::vec3(p1), glm::vec3(normal), _color);
-		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), _color);
-		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), _color, 1);
+		vertices[3] = Vertex(glm::vec3(p1), glm::vec3(normal), glm::vec4(_color, opacity));
+		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), glm::vec4(_color, opacity));
+		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), glm::vec4(_color, opacity), 1);
 
 		renderManager->addObject(name.c_str(), "", vertices);
 	}
@@ -163,16 +171,19 @@ bool Rectangle::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Fa
 	return hit;
 }
 
-void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, CGA* cga) {
+void Rectangle::findRule(const std::vector<Stroke>& strokes, int sketch_step, CGA* cga) {
+	// copy the entire ruleset to the proposed one
+	cga->proposedRuleSet = cga->ruleSet;
+
 	glm::mat4 mat = _pivot * _modelMat;
 	mat = glm::inverse(mat);
 
 	if (sketch_step == STEP_FLOOR) {
 		std::vector<float> floor_y;
 		floor_y.push_back(0);
-		for (int i = 0; i < strokes3D.size(); ++i) {
-			glm::vec3 p1 = glm::vec3(mat * glm::vec4(strokes3D[i].p1, 1));
-			glm::vec3 p2 = glm::vec3(mat * glm::vec4(strokes3D[i].p2, 1));
+		for (int i = 0; i < strokes.size(); ++i) {
+			glm::vec3 p1 = glm::vec3(mat * glm::vec4(strokes[i].points3d[0], 1));
+			glm::vec3 p2 = glm::vec3(mat * glm::vec4(strokes[i].points3d.back(), 1));
 
 			floor_y.push_back((p1.y + p2.y) * 0.5f);
 		}
@@ -181,20 +192,70 @@ void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step
 		
 		std::vector<float> floor_heights;
 		for (int i = 0; i < floor_y.size() - 1; ++i) {
-			if (floor_y[i + 1] - floor_y[i] > 0.5f) {
+			if (floor_y[i + 1] - floor_y[i] >= 1.0f) {
 				floor_heights.push_back(floor_y[i + 1] - floor_y[i]);
 			}
 		}
 
 		if (floor_heights.size() == 1) {
 			// pattern A*
-			cga->ruleSet.attrs["floor_height"] = boost::lexical_cast<std::string>(floor_heights[0]);
-			cga->ruleSet.rules[_name] = cga->ruleRepository["floors"][0];
+			RuleSet ruleSet = cga->ruleRepository["floors"][0];
+			Rule startRule = ruleSet.rules["Start"];
+			ruleSet.rules.erase("Start");
+			ruleSet.rules[_name] = startRule;
+			ruleSet.attrs["floor_height"] = boost::lexical_cast<std::string>(floor_heights[0]);
+
+			cga->proposedRuleSet.merge(ruleSet);
 		} else {
 			// pattern { A | B* }
-			cga->ruleSet.attrs["groundf_height"] = boost::lexical_cast<std::string>(floor_heights[0]);
-			cga->ruleSet.attrs["floor_height"] = boost::lexical_cast<std::string>(floor_heights[1]);
-			cga->ruleSet.rules[_name] = cga->ruleRepository["floors"][1];
+			RuleSet ruleSet = cga->ruleRepository["floors"][1];
+			Rule startRule = ruleSet.rules["Start"];
+			ruleSet.rules.erase("Start");
+			ruleSet.rules[_name] = startRule;
+			ruleSet.attrs["groundf_height"] = boost::lexical_cast<std::string>(floor_heights[0]);
+			ruleSet.attrs["floor_height"] = boost::lexical_cast<std::string>(floor_heights[1]);
+
+			cga->proposedRuleSet.merge(ruleSet);
+		}
+	} else if (sketch_step == STEP_WINDOW) {
+		std::vector<BoundingBox> bboxes;
+		for (int i = 0; i < strokes.size(); ++i) {
+			std::vector<glm::vec3> pts;
+			for (int k = 0; k < strokes[i].points3d.size(); ++k) {
+				pts.push_back(glm::vec3(mat * glm::vec4(strokes[i].points3d[k], 1)));
+			}
+			BoundingBox bbox(pts);
+			bboxes.push_back(bbox);
+		}
+
+		if (bboxes.size() == 1) {
+			// pattern A*
+			RuleSet ruleSet = cga->ruleRepository["windows"][0];
+			Rule startRule = ruleSet.rules["Start"];
+			ruleSet.rules.erase("Start");
+			ruleSet.rules[_name] = startRule;
+			ruleSet.attrs["tile_width1"] = boost::lexical_cast<std::string>(bboxes[0].minPt.x * 2 + bboxes[0].sx());
+			ruleSet.attrs["tile_horizontal_margin"] = boost::lexical_cast<std::string>(bboxes[0].minPt.x);
+			ruleSet.attrs["tile_vertical_margin1"] = boost::lexical_cast<std::string>(bboxes[0].minPt.y);
+			ruleSet.attrs["tile_vertical_margin2"] = boost::lexical_cast<std::string>(_scope.y - bboxes[0].maxPt.y);
+
+			cga->proposedRuleSet.merge(ruleSet);
+		} else if (bboxes.size() == 2) {
+			// pattern { A | B }*
+			RuleSet ruleSet = cga->ruleRepository["windows"][1];
+			Rule startRule = ruleSet.rules["Start"];
+			ruleSet.rules.erase("Start");
+			ruleSet.rules[_name] = startRule;
+
+			float tile_margin = (bboxes[1].minPt.x - bboxes[0].maxPt.x) * 0.5f;
+			ruleSet.attrs["floor_horizontal_margin"] = boost::lexical_cast<std::string>(bboxes[0].minPt.x - tile_margin);
+			ruleSet.attrs["tile_width1"] = boost::lexical_cast<std::string>(bboxes[0].sx() + tile_margin);
+			ruleSet.attrs["tile_width2"] = boost::lexical_cast<std::string>(bboxes[1].sx() + tile_margin);
+			ruleSet.attrs["tile_horizontal_margin"] = boost::lexical_cast<std::string>(tile_margin);
+			ruleSet.attrs["tile_vertical_margin1"] = boost::lexical_cast<std::string>(bboxes[0].minPt.y);
+			ruleSet.attrs["tile_vertical_margin2"] = boost::lexical_cast<std::string>(_scope.y - bboxes[0].maxPt.y);
+
+			cga->proposedRuleSet.merge(ruleSet);
 		}
 	}
 

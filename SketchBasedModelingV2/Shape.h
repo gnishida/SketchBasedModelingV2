@@ -6,9 +6,8 @@
 #include <vector>
 #include <string>
 #include <boost/shared_ptr.hpp>
-#include "Asset.h"
 #include "Face.h"
-#include "Stroke3D.h"
+#include "Stroke.h"
 
 class RenderManager;
 
@@ -18,6 +17,9 @@ class CGA;
 class RuleSet;
 
 class Shape {
+public:
+	static float explode_factor;
+
 public:
 	std::string _name;
 	bool _removed;
@@ -30,19 +32,16 @@ public:
 	glm::vec3 _prev_scope;
 	glm::mat4 _pivot;
 
-	static std::map<std::string, Asset> assets;
-
 public:
-	void center(int axesSelector);
 	virtual boost::shared_ptr<Shape> clone(const std::string& name) const;
 	virtual void comp(const std::map<std::string, std::string>& name_map, std::vector<boost::shared_ptr<Shape> >& shapes);
 	virtual boost::shared_ptr<Shape> extrude(const std::string& name, float height);
 	void nil();
 	virtual void split(int splitAxis, const std::vector<float>& sizes, const std::vector<std::string>& names, std::vector<boost::shared_ptr<Shape> >& objects);
-	virtual void render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const;
+	virtual void render(RenderManager* renderManager, const std::string& name, float opacity, bool showScopeCoordinateSystem) const;
 
 	virtual bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist);
-	virtual void findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, CGA* cga);
+	virtual void findRule(const std::vector<Stroke>& strokes, int sketch_step, CGA* cga);
 
 protected:
 	void drawAxes(RenderManager* renderManager, const glm::mat4& modelMat) const;

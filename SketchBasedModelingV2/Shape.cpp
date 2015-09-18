@@ -7,21 +7,7 @@
 
 namespace cga {
 
-std::map<std::string, Asset> Shape::assets;
-
-void Shape::center(int axesSelector) {
-	if (axesSelector == AXES_SELECTOR_XYZ || axesSelector == AXES_SELECTOR_XY || axesSelector == AXES_SELECTOR_XZ || axesSelector == AXES_SELECTOR_X) {
-		_modelMat = glm::translate(_modelMat, glm::vec3((_prev_scope.x - _scope.x) * 0.5, 0, 0));
-	}
-	if (axesSelector == AXES_SELECTOR_XYZ || axesSelector == AXES_SELECTOR_XY || axesSelector == AXES_SELECTOR_YZ || axesSelector == AXES_SELECTOR_Y) {
-		_modelMat = glm::translate(_modelMat, glm::vec3(0, (_prev_scope.y - _scope.y) * 0.5, 0));
-	}
-	if (axesSelector == AXES_SELECTOR_XYZ || axesSelector == AXES_SELECTOR_XZ || axesSelector == AXES_SELECTOR_YZ || axesSelector == AXES_SELECTOR_Z) {
-		_modelMat = glm::translate(_modelMat, glm::vec3(0, 0, (_prev_scope.z - _scope.z) * 0.5));
-	}
-
-	_prev_scope = _scope;
-}
+float Shape::explode_factor = 1.01f;
 
 boost::shared_ptr<Shape> Shape::clone(const std::string& name) const {
 	throw "clone() is not supported.";
@@ -43,7 +29,7 @@ void Shape::split(int splitAxis, const std::vector<float>& sizes, const std::vec
 	throw "split() is not supported.";
 }
 
-void Shape::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
+void Shape::render(RenderManager* renderManager, const std::string& name, float opacity, bool showScopeCoordinateSystem) const {
 	throw "render() is not supported.";
 }
 
@@ -51,7 +37,7 @@ bool Shape::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& 
 	throw "hitFace() is not supported.";
 }
 
-void Shape::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, CGA* cga) {
+void Shape::findRule(const std::vector<Stroke>& strokes, int sketch_step, CGA* cga) {
 	throw "findRule() is not supported.";
 }
 

@@ -83,9 +83,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SketchyRenderingBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CompOperator.cpp">
       <Filter>Source Files\rules</Filter>
     </ClCompile>
@@ -128,7 +125,7 @@
     <ClCompile Include="Face.cpp">
       <Filter>Source Files\shapes</Filter>
     </ClCompile>
-    <ClCompile Include="Stroke3D.cpp">
+    <ClCompile Include="Stroke.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -163,9 +160,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SketchyRenderingBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
@@ -213,7 +207,7 @@
     <ClInclude Include="Face.h">
       <Filter>Source Files\shapes</Filter>
     </ClInclude>
-    <ClInclude Include="Stroke3D.h">
+    <ClInclude Include="Stroke.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,8 +44,15 @@
     <addaction name="actionStepFloor"/>
     <addaction name="actionStepWindow"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionViewWireFrame"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuStep"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -213,6 +220,17 @@
    </property>
    <property name="text">
     <string>Window</string>
+   </property>
+  </action>
+  <action name="actionViewWireFrame">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>WireFrame</string>
+   </property>
+   <property name="shortcut">
+    <string>W</string>
    </property>
   </action>
  </widget>

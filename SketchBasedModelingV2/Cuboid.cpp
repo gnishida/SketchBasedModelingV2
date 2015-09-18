@@ -103,47 +103,52 @@ void Cuboid::split(int splitAxis, const std::vector<float>& sizes, const std::ve
 	}
 }
 
-void Cuboid::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
+void Cuboid::render(RenderManager* renderManager, const std::string& name, float opacity, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
 	int num = 0;
 
 	std::vector<Vertex> vertices;
 
+	glm::vec3 s = _scope;
+	if (opacity < 1.0f) {
+		s *= explode_factor;
+	}
+
 	// top
 	{
-		glm::mat4 mat = _pivot * glm::translate(_modelMat, glm::vec3(_scope.x * 0.5, _scope.y * 0.5, _scope.z));
-		glutils::drawQuad(_scope.x, _scope.y, _color, mat, vertices);
+		glm::mat4 mat = _pivot * glm::translate(_modelMat, glm::vec3(s.x * 0.5, s.y * 0.5, s.z));
+		glutils::drawQuad(_scope.x, _scope.y, glm::vec4(_color, opacity), mat, vertices);
 	}
 
 	// base
 	if (_scope.z >= 0) {
-		glm::mat4 mat = _pivot * glm::translate(_modelMat, glm::vec3(_scope.x * 0.5, _scope.y * 0.5, 0));
-		glutils::drawQuad(_scope.x, _scope.y, _color, mat, vertices);
+		glm::mat4 mat = _pivot * glm::translate(_modelMat, glm::vec3(s.x * 0.5, s.y * 0.5, 0));
+		glutils::drawQuad(s.x, s.y, glm::vec4(_color, opacity), mat, vertices);
 	}
 
 	// front
 	{
-		glm::mat4 mat = _pivot * glm::rotate(glm::translate(_modelMat, glm::vec3(_scope.x * 0.5, 0, _scope.z * 0.5)), M_PI * 0.5f, glm::vec3(1, 0, 0));
-		glutils::drawQuad(_scope.x, _scope.z, _color, mat, vertices);
+		glm::mat4 mat = _pivot * glm::rotate(glm::translate(_modelMat, glm::vec3(s.x * 0.5, 0, s.z * 0.5)), M_PI * 0.5f, glm::vec3(1, 0, 0));
+		glutils::drawQuad(s.x, s.z, glm::vec4(_color, opacity), mat, vertices);
 	}
 
 	// back
 	{
-		glm::mat4 mat = _pivot * glm::rotate(glm::translate(glm::rotate(glm::translate(_modelMat, glm::vec3(_scope.x * 0.5, 0, _scope.z * 0.5)), M_PI, glm::vec3(0, 0, 1)), glm::vec3(0, -_scope.y, 0)), M_PI * 0.5f, glm::vec3(1, 0, 0));
-		glutils::drawQuad(_scope.x, _scope.z, _color, mat, vertices);
+		glm::mat4 mat = _pivot * glm::rotate(glm::translate(glm::rotate(glm::translate(_modelMat, glm::vec3(s.x * 0.5, 0, s.z * 0.5)), M_PI, glm::vec3(0, 0, 1)), glm::vec3(0, -s.y, 0)), M_PI * 0.5f, glm::vec3(1, 0, 0));
+		glutils::drawQuad(s.x, s.z, glm::vec4(_color, opacity), mat, vertices);
 	}
 
 	// right
 	{
-		glm::mat4 mat = _pivot * glm::rotate(glm::rotate(glm::translate(_modelMat, glm::vec3(_scope.x, _scope.y * 0.5, _scope.z * 0.5)), M_PI * 0.5f, glm::vec3(0, 0, 1)), M_PI * 0.5f, glm::vec3(1, 0, 0));
-		glutils::drawQuad(_scope.y, _scope.z, _color, mat, vertices);
+		glm::mat4 mat = _pivot * glm::rotate(glm::rotate(glm::translate(_modelMat, glm::vec3(s.x, s.y * 0.5, s.z * 0.5)), M_PI * 0.5f, glm::vec3(0, 0, 1)), M_PI * 0.5f, glm::vec3(1, 0, 0));
+		glutils::drawQuad(s.y, s.z, glm::vec4(_color, opacity), mat, vertices);
 	}
 
 	// left
 	{
-		glm::mat4 mat = _pivot * glm::rotate(glm::translate(glm::rotate(_modelMat, -M_PI * 0.5f, glm::vec3(0, 0, 1)), glm::vec3(-_scope.y * 0.5, 0, _scope.z * 0.5)), M_PI * 0.5f, glm::vec3(1, 0, 0));
-		glutils::drawQuad(_scope.y, _scope.z, _color, mat, vertices);
+		glm::mat4 mat = _pivot * glm::rotate(glm::translate(glm::rotate(_modelMat, -M_PI * 0.5f, glm::vec3(0, 0, 1)), glm::vec3(-s.y * 0.5, 0, s.z * 0.5)), M_PI * 0.5f, glm::vec3(1, 0, 0));
+		glutils::drawQuad(s.y, s.z, glm::vec4(_color, opacity), mat, vertices);
 	}
 
 	renderManager->addObject(name.c_str(), "", vertices);

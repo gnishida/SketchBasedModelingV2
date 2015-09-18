@@ -17,7 +17,7 @@ public:
 	boost::shared_ptr<Shape> clone(const std::string& name) const;
 	void comp(const std::map<std::string, std::string>& name_map, std::vector<boost::shared_ptr<Shape> >& shapes);
 	void split(int splitAxis, const std::vector<float>& sizes, const std::vector<std::string>& names, std::vector<boost::shared_ptr<Shape> >& objects);
-	void render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const;
+	void render(RenderManager* renderManager, const std::string& name, float opacity, bool showScopeCoordinateSystem) const;
 };
 
 }

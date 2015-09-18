@@ -64,6 +64,8 @@ public:
 	void addOperator(const std::string& name, const boost::shared_ptr<Operator>& op);
 	float evalFloat(const std::string& attr_name, const boost::shared_ptr<Shape>& shape) const;
 	std::string evalString(const std::string& attr_name, const boost::shared_ptr<Shape>& shape) const;
+
+	void merge(const RuleSet& ruleSet);
 };
 
 }

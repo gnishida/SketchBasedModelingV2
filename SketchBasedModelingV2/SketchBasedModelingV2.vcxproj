@@ -174,9 +174,8 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMapping.cpp" />
     <ClCompile Include="Shape.cpp" />
-    <ClCompile Include="SketchyRenderingBuffer.cpp" />
     <ClCompile Include="SplitOperator.cpp" />
-    <ClCompile Include="Stroke3D.cpp" />
+    <ClCompile Include="Stroke.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -239,9 +238,8 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMapping.h" />
     <ClInclude Include="Shape.h" />
-    <ClInclude Include="SketchyRenderingBuffer.h" />
     <ClInclude Include="SplitOperator.h" />
-    <ClInclude Include="Stroke3D.h" />
+    <ClInclude Include="Stroke.h" />
     <ClInclude Include="Vertex.h" />
     <CustomBuild Include="GLWidget3D.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

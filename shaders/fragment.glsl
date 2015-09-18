@@ -1,7 +1,7 @@
 #version 330
 
 // varying variables
-in vec3 fColor;
+in vec4 fColor;
 in vec3 fTexCoord;
 in vec3 fNormal;
 in vec3 fPosition;
@@ -38,7 +38,8 @@ float shadowCoef(){
 void main()
 {
 	// for color mode
-	outputF = vec4(fColor, 1.0);
+	float opacity = fColor.w;
+	outputF = vec4(fColor.xyz, 1);
 
 	// determine frag distance to closest edge
 	float nearD = min(min(dist[0],dist[1]),dist[2]);
@@ -64,5 +65,7 @@ void main()
 	if (wireframeEnalbed == 1) {
 		outputF = edgeIntensity * vec4(0.05, 0.05, 0.05, 1.0) + (1.0 - edgeIntensity) * outputF;
 	}
+
+	outputF.w = opacity;
 }
 

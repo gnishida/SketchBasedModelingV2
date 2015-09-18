@@ -32,15 +32,20 @@ public:
 	boost::shared_ptr<Shape> axiom;
 	std::list<boost::shared_ptr<Shape> > stack;
 	std::vector<boost::shared_ptr<Shape> > shapes;
-	RuleSet ruleSet;
+	std::vector<boost::shared_ptr<Shape> > proposedShapes;
 
-	std::map<std::string, std::vector<Rule> > ruleRepository;
+	RuleSet ruleSet;
+	RuleSet proposedRuleSet;
+
+	std::map<std::string, std::vector<RuleSet> > ruleRepository;
 
 public:
 	CGA();
 
 	void loadRules();
+	void acceptProposal();
 	void generate();
+	void generateProposal();
 	void render(RenderManager* renderManager, bool showScopeCoordinateSystem = false);
 
 	bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face);

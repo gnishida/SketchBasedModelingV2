@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created: Fri Sep 18 11:16:39 2015
+** Created: Fri Sep 18 17:11:57 2015
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -48,10 +48,12 @@ public:
     QAction *actionOptions;
     QAction *actionStepFloor;
     QAction *actionStepWindow;
+    QAction *actionViewWireFrame;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuStep;
+    QMenu *menuView;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -112,6 +114,9 @@ public:
         actionStepWindow = new QAction(MainWindowClass);
         actionStepWindow->setObjectName(QString::fromUtf8("actionStepWindow"));
         actionStepWindow->setCheckable(true);
+        actionViewWireFrame = new QAction(MainWindowClass);
+        actionViewWireFrame->setObjectName(QString::fromUtf8("actionViewWireFrame"));
+        actionViewWireFrame->setCheckable(true);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -122,6 +127,8 @@ public:
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuStep = new QMenu(menuBar);
         menuStep->setObjectName(QString::fromUtf8("menuStep"));
+        menuView = new QMenu(menuBar);
+        menuView->setObjectName(QString::fromUtf8("menuView"));
         MainWindowClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindowClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -132,6 +139,7 @@ public:
 
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuStep->menuAction());
+        menuBar->addAction(menuView->menuAction());
         menuFile->addAction(actionNewSketch);
         menuFile->addSeparator();
         menuFile->addAction(actionSaveImage);
@@ -143,6 +151,7 @@ public:
         menuFile->addAction(actionExit);
         menuStep->addAction(actionStepFloor);
         menuStep->addAction(actionStepWindow);
+        menuView->addAction(actionViewWireFrame);
 
         retranslateUi(MainWindowClass);
 
@@ -181,8 +190,11 @@ public:
         actionOptions->setText(QApplication::translate("MainWindowClass", "Options", 0, QApplication::UnicodeUTF8));
         actionStepFloor->setText(QApplication::translate("MainWindowClass", "Floor", 0, QApplication::UnicodeUTF8));
         actionStepWindow->setText(QApplication::translate("MainWindowClass", "Window", 0, QApplication::UnicodeUTF8));
+        actionViewWireFrame->setText(QApplication::translate("MainWindowClass", "WireFrame", 0, QApplication::UnicodeUTF8));
+        actionViewWireFrame->setShortcut(QApplication::translate("MainWindowClass", "W", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "&File", 0, QApplication::UnicodeUTF8));
         menuStep->setTitle(QApplication::translate("MainWindowClass", "Step", 0, QApplication::UnicodeUTF8));
+        menuView->setTitle(QApplication::translate("MainWindowClass", "View", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

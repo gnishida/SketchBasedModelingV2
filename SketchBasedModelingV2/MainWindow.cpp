@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, 
 	ui.actionStepFloor->setChecked(true);
 	ui.actionStepWindow->setChecked(false);
 
+	ui.actionViewWireFrame->setChecked(true);
+
 	// メニューハンドラ
 	connect(ui.actionNewSketch, SIGNAL(triggered()), this, SLOT(onNewSketch()));
 	connect(ui.actionSaveImage, SIGNAL(triggered()), this, SLOT(onSaveImage()));
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, 
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	connect(ui.actionStepFloor, SIGNAL(triggered()), this, SLOT(onStepFloor()));
 	connect(ui.actionStepWindow, SIGNAL(triggered()), this, SLOT(onStepWindow()));
+	connect(ui.actionViewWireFrame, SIGNAL(triggered()), this, SLOT(onViewWireFrame()));
 
 	glWidget = new GLWidget3D(this);
 	setCentralWidget(glWidget);
@@ -72,4 +75,9 @@ void MainWindow::onStepFloor() {
 
 void MainWindow::onStepWindow() {
 	glWidget->sketch_step = cga::STEP_WINDOW;
+}
+
+void MainWindow::onViewWireFrame() {
+	glWidget->showWireframe = ui.actionViewWireFrame->isChecked();
+	glWidget->update();
 }

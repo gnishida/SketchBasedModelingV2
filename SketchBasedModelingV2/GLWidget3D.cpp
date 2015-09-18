@@ -34,6 +34,11 @@ void GLWidget3D::keyPressEvent(QKeyEvent *e) {
 	case Qt::Key_Control:
 		ctrlPressed = true;
 		break;
+	case Qt::Key_Return:
+		cga_system.acceptProposal();
+		cga_system.render(&renderManager, true);
+		update();
+		break;
 	case Qt::Key_Space:
 		inferRuleFromSketch();
 		break;
@@ -82,21 +87,20 @@ void GLWidget3D::inferRuleFromSketch() {
 	// faceを取得
 	cga::Face face;
 	if (cga_system.hitFace(cameraPos, view_v1, face)) {
-		std::vector<Stroke3D> strokes3D;
-
 		// strokeの3d座標を計算
 		for (int i = 0; i < strokes.size(); ++i) {
-			glm::vec3 p1 = unprojectByPlane(strokes[i].points[0], face.points[0], face.normals[0]);
-			glm::vec3 p2 = unprojectByPlane(strokes[i].points.back(), face.points[0], face.normals[0]);
-		
-			strokes3D.push_back(Stroke3D(p1, p2));
+			if (strokes[i].points3d.size() == strokes[i].points.size()) continue;
+
+			for (int k = 0; k < strokes[i].points.size(); ++k) {
+				strokes[i].points3d.push_back(unprojectByPlane(strokes[i].points[k], face.points[0], face.normals[0]));
+			}		
 		}
 
 		// strokeから、ルールを探す
-		face.shape->findRule(strokes3D, sketch_step, &cga_system);
+		face.shape->findRule(strokes, sketch_step, &cga_system);
 
 		// CGAモデルを生成しなおす
-		cga_system.generate();
+		cga_system.generateProposal();
 
 		// 描画する
 		cga_system.render(&renderManager, true);
@@ -270,14 +274,11 @@ glm::vec2 GLWidget3D::findTurningPoint(Stroke* stroke) {
 }
 
 void GLWidget3D::clear() {
-	points.clear();
 	strokes.clear();
 	if (currentStroke != NULL) {
 		delete currentStroke;
 		currentStroke = NULL;
 	}
-
-	points.generate(&renderManager);
 }
 
 void GLWidget3D::resizeGL(int width, int height) {
@@ -285,8 +286,6 @@ void GLWidget3D::resizeGL(int width, int height) {
 	height = height ? height : 1;
 	glViewport(0, 0, width, height);
 	camera.updatePMatrix(width, height);
-
-	rb.update(width, height);
 }
 
 void GLWidget3D::mousePressEvent(QMouseEvent *e) {
@@ -302,7 +301,7 @@ void GLWidget3D::mousePressEvent(QMouseEvent *e) {
 
 void GLWidget3D::mouseReleaseEvent(QMouseEvent *e) {
 	if (currentStroke != NULL) {
-		if (currentStroke->points.size() > 3 && glm::length(currentStroke->points.back() - currentStroke->points[0]) > 10) {
+		if (currentStroke->points.size() > 3 && currentStroke->length() > 10) {
 			strokes.push_back(*currentStroke);
 		}
 
@@ -322,6 +321,7 @@ void GLWidget3D::mouseMoveEvent(QMouseEvent *e) {
 		} else if (e->buttons() & Qt::RightButton) { // Zoom
 			camera.zoom(e->x(), e->y());
 		}
+		strokes.clear();
 	} else { // sketch
 		drawLineTo(e->pos());
 	}
@@ -339,7 +339,7 @@ void GLWidget3D::initializeGL() {
 	std::vector<Vertex> vertices;
 	glm::mat4 mat = glm::translate(glm::mat4(), glm::vec3(0, -1, 0));
 	mat = glm::rotate(mat, (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0));
-	glutils::drawGrid(100, 100, 2, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mat, vertices);
+	glutils::drawGrid(100, 100, 2, glm::vec4(0, 0, 0, 1), glm::vec4(1, 1, 1, 1), mat, vertices);
 
 	renderManager.addObject("grid", "", vertices);
 
@@ -371,12 +371,15 @@ void GLWidget3D::paintEvent(QPaintEvent *event) {
 
 	glUseProgram(renderManager.program);
 
-	//renderManager.updateShadowMap(this, light_dir, light_mvpMatrix);
 	glClearColor(0.443, 0.439, 0.458, 0.0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
+
+	// for transparacy
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Model view projection行列をシェーダに渡す
 	glUniformMatrix4fv(glGetUniformLocation(renderManager.program, "mvpMatrix"),  1, GL_FALSE, &camera.mvpMatrix[0][0]);
@@ -386,9 +389,6 @@ void GLWidget3D::paintEvent(QPaintEvent *event) {
 	//glUniform1fv(glGetUniformLocation(renderManager.program, "lightDir"), 3, &light_dir[0]);
 	glUniform3f(glGetUniformLocation(renderManager.program, "lightDir"), light_dir.x, light_dir.y, light_dir.z);
 	
-	//rb.pass1();
-	//drawScene(0);
-	//rb.pass2();
 	drawScene(0);
 
 	// OpenGLの設定を元に戻す

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<rules>
+	<rule name="Start">
+		<split splitAxis="x">
+			<param type="floating" value="tile_width1" name="Tile" repeat="true"/>
+		</split>
+	</rule>
+	
+	<rule name="Tile">
+		<split splitAxis="x">
+			<param type="absolute" value="tile_horizontal_margin" name="Wall"/>
+			<param type="floating" value="1" name="WindowTile"/>
+			<param type="absolute" value="tile_horizontal_margin" name="Wall"/>
+		</split>
+	</rule>
+	
+	<rule name="WindowTile">
+		<split splitAxis="y">
+			<param type="absolute" value="tile_vertical_margin1" name="Wall"/>
+			<param type="floating" value="1" name="Window"/>
+			<param type="absolute" value="tile_vertical_margin2" name="Wall"/>
+		</split>
+	</rule>
+
+	<rule name="Window">
+		<extrude height="-0.3"/>
+	</rule>
+</rules>

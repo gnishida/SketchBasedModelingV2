@@ -28,6 +28,7 @@ public slots:
 	void onResetCamera();
 	void onStepFloor();
 	void onStepWindow();
+	void onViewWireFrame();
 };
 
 #endif // MAINWINDOW_H

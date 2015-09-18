@@ -46,16 +46,24 @@ void parseRules(const std::string& filename, RuleSet& ruleSet) {
 	}
 }
 
-void parseRule(const std::string& filename, Rule& rule) {
-	rule.operators.clear();
-
+void parseRule(const std::string& filename, std::vector<Rule>& rules) {
 	QFile file(filename.c_str());
 
 	QDomDocument doc;
 	doc.setContent(&file, true);
 	QDomElement root = doc.documentElement();
 
-	parseRuleNode(root, rule);
+	QDomNode child_node = root.firstChild();
+	while (!child_node.isNull()) {
+		if (child_node.toElement().tagName() == "rule") {
+			Rule rule;
+			parseRuleNode(root, rule);
+
+			rules.push_back(rule);
+		}
+
+		child_node = child_node.nextSibling();
+	}
 }
 
 void parseRuleNode(const QDomElement& rule_node, Rule& rule) {

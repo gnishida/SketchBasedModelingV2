@@ -353,7 +353,7 @@ void PointCloud::generate(RenderManager* renderManager) {
 		for (int k = 0; k < faces[i].points.size(); ++k) {
 			pts.push_back(points[faces[i].points[k]]);
 		}
-		glutils::drawPolygon(pts, glm::vec3(1, 1, 1), glm::mat4(), vertices);
+		glutils::drawPolygon(pts, glm::vec4(1, 1, 1, 1), glm::mat4(), vertices);
 	}
 	renderManager->addObject("face", "", vertices);
 }
