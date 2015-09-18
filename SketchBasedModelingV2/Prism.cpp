@@ -139,19 +139,19 @@ void Prism::render(RenderManager* renderManager, const std::string& name, bool s
 			glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(p3) - glm::vec3(p1), glm::vec3(p2) - glm::vec3(p1)));
 			
 			vertices.push_back(Vertex(glm::vec3(p1), normal, _color));
-			vertices.push_back(Vertex(glm::vec3(p3), normal, _color));
+			vertices.push_back(Vertex(glm::vec3(p3), normal, _color, 1));
 			vertices.push_back(Vertex(glm::vec3(p4), normal, _color));
 
 			vertices.push_back(Vertex(glm::vec3(p1), normal, _color));
 			vertices.push_back(Vertex(glm::vec3(p4), normal, _color));
-			vertices.push_back(Vertex(glm::vec3(p2), normal, _color));
+			vertices.push_back(Vertex(glm::vec3(p2), normal, _color, 1));
 
 			p1 = p3;
 			p2 = p4;
 		}
 	}
 
-	renderManager->addObject(name.c_str(), "", vertices);
+	renderManager->addObject(_name.c_str(), "", vertices);
 
 	if (showScopeCoordinateSystem) {
 		drawAxes(renderManager, _pivot * _modelMat);
