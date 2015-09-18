@@ -53,7 +53,7 @@ public:
 	virtual void render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const;
 
 	virtual bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist);
-	virtual void findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet);
+	virtual void findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, RuleSet* ruleSet);
 
 protected:
 	void drawAxes(RenderManager* renderManager, const glm::mat4& modelMat) const;

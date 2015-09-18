@@ -261,7 +261,7 @@ bool Rectangle::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Fa
 	return hit;
 }
 
-void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet) {
+void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, RuleSet* ruleSet) {
 	glm::mat4 mat = _pivot * _modelMat;
 	mat = glm::inverse(mat);
 
@@ -269,30 +269,32 @@ void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSe
 		glm::vec3 p1 = glm::vec3(mat * glm::vec4(strokes3D[i].p1, 1));
 		glm::vec3 p2 = glm::vec3(mat * glm::vec4(strokes3D[i].p2, 1));
 
-		// split(y)?
-		if (p1.x < _scope.x * 0.2 && p2.x > _scope.x * 0.8 && fabs(p1.y - p2.y) < _scope.y * 0.3) {
-			float y = (p1.y + p2.y) * 0.5f;
-			if (y < _scope.y * 0.5f) {
-				// this line specifies the height of the first floor
-				ruleSet->addRule(_name);
-				std::string size = boost::lexical_cast<std::string>(y);
-				std::vector<Value> sizes;
-				sizes.push_back(Value(Value::TYPE_FLOATING, size, true));
+		if (sketch_step == STEP_FLOOR) {
+			if (p1.x < _scope.x * 0.2 && p2.x > _scope.x * 0.8 && fabs(p1.y - p2.y) < _scope.y * 0.3) {
+				float y = (p1.y + p2.y) * 0.5f;
+				if (y < _scope.y * 0.5f) {
+					// this line specifies the height of the first floor
+					ruleSet->addRule(_name);
+					std::string size = boost::lexical_cast<std::string>(y);
+					std::vector<Value> sizes;
+					sizes.push_back(Value(Value::TYPE_FLOATING, size, true));
 
-				std::vector<std::string> names;
-				names.push_back("Floor");
-				ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
-			} else {
-				// this line specifies the height of the top floor
-				ruleSet->addRule(_name);
-				std::string size = boost::lexical_cast<std::string>(_scope.y - y);
-				std::vector<Value> sizes;
-				sizes.push_back(Value(Value::TYPE_FLOATING, size, true));
+					std::vector<std::string> names;
+					names.push_back("Floor");
+					ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
+				} else {
+					// this line specifies the height of the top floor
+					ruleSet->addRule(_name);
+					std::string size = boost::lexical_cast<std::string>(_scope.y - y);
+					std::vector<Value> sizes;
+					sizes.push_back(Value(Value::TYPE_FLOATING, size, true));
 
-				std::vector<std::string> names;
-				names.push_back("Floor");
-				ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
+					std::vector<std::string> names;
+					names.push_back("Floor");
+					ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
+				}
 			}
+		} else {
 		}
 	}
 }

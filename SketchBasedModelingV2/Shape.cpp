@@ -191,7 +191,7 @@ bool Shape::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& 
 	throw "hitFace() is not supported.";
 }
 
-void Shape::findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet) {
+void Shape::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, RuleSet* ruleSet) {
 	throw "findRule() is not supported.";
 }
 

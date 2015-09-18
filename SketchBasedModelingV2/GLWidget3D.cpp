@@ -20,6 +20,9 @@ GLWidget3D::GLWidget3D(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers
 
 	// initialize keys
 	ctrlPressed = false;
+
+	// initial sketch step
+	sketch_step = cga::STEP_FLOOR;
 }
 
 void GLWidget3D::keyPressEvent(QKeyEvent *e) {
@@ -88,7 +91,7 @@ void GLWidget3D::inferRuleFromSketch() {
 		}
 
 		// strokeから、ルールを探す
-		face.shape->findRule(strokes3D, &cga_system.ruleSet);
+		face.shape->findRule(strokes3D, sketch_step, &cga_system.ruleSet);
 
 		// CGAモデルを生成しなおす
 		cga_system.generate();

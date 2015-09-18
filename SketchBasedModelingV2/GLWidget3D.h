@@ -36,6 +36,7 @@ public:
 	bool showScopeCoordinateSystem;
 
 	cga::CGA cga_system;
+	int sketch_step;
 
 	bool ctrlPressed;
 	QPoint lastPoint;

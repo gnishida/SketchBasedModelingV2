@@ -37,7 +37,15 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuStep">
+    <property name="title">
+     <string>Step</string>
+    </property>
+    <addaction name="actionStepFloor"/>
+    <addaction name="actionStepWindow"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuStep"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -189,6 +197,22 @@
   <action name="actionOptions">
    <property name="text">
     <string>Options</string>
+   </property>
+  </action>
+  <action name="actionStepFloor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Floor</string>
+   </property>
+  </action>
+  <action name="actionStepWindow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Window</string>
    </property>
   </action>
  </widget>

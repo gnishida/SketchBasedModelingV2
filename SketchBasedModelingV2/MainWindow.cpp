@@ -6,6 +6,12 @@
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, flags) {
 	ui.setupUi(this);
 
+	QActionGroup* sketchStepGroup = new QActionGroup(this);
+	sketchStepGroup->addAction(ui.actionStepFloor);
+	sketchStepGroup->addAction(ui.actionStepWindow);
+	ui.actionStepFloor->setChecked(true);
+	ui.actionStepWindow->setChecked(false);
+
 	// メニューハンドラ
 	connect(ui.actionNewSketch, SIGNAL(triggered()), this, SLOT(onNewSketch()));
 	connect(ui.actionSaveImage, SIGNAL(triggered()), this, SLOT(onSaveImage()));
@@ -13,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, 
 	connect(ui.actionSaveCamera, SIGNAL(triggered()), this, SLOT(onSaveCamera()));
 	connect(ui.actionResetCamera, SIGNAL(triggered()), this, SLOT(onResetCamera()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(ui.actionStepFloor, SIGNAL(triggered()), this, SLOT(onStepFloor()));
+	connect(ui.actionStepWindow, SIGNAL(triggered()), this, SLOT(onStepWindow()));
 
 	glWidget = new GLWidget3D(this);
 	setCentralWidget(glWidget);
@@ -58,3 +66,10 @@ void MainWindow::onResetCamera() {
 	glWidget->update();
 }
 
+void MainWindow::onStepFloor() {
+	glWidget->sketch_step = cga::STEP_FLOOR;
+}
+
+void MainWindow::onStepWindow() {
+	glWidget->sketch_step = cga::STEP_WINDOW;
+}

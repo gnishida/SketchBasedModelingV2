@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created: Thu Sep 17 19:14:27 2015
+** Created: Thu Sep 17 20:10:50 2015
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -46,9 +46,12 @@ public:
     QAction *actionSaveCamera;
     QAction *actionResetCamera;
     QAction *actionOptions;
+    QAction *actionStepFloor;
+    QAction *actionStepWindow;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
+    QMenu *menuStep;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -103,6 +106,12 @@ public:
         actionResetCamera->setObjectName(QString::fromUtf8("actionResetCamera"));
         actionOptions = new QAction(MainWindowClass);
         actionOptions->setObjectName(QString::fromUtf8("actionOptions"));
+        actionStepFloor = new QAction(MainWindowClass);
+        actionStepFloor->setObjectName(QString::fromUtf8("actionStepFloor"));
+        actionStepFloor->setCheckable(true);
+        actionStepWindow = new QAction(MainWindowClass);
+        actionStepWindow->setObjectName(QString::fromUtf8("actionStepWindow"));
+        actionStepWindow->setCheckable(true);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
@@ -111,6 +120,8 @@ public:
         menuBar->setGeometry(QRect(0, 0, 800, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
+        menuStep = new QMenu(menuBar);
+        menuStep->setObjectName(QString::fromUtf8("menuStep"));
         MainWindowClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindowClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -120,6 +131,7 @@ public:
         MainWindowClass->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
+        menuBar->addAction(menuStep->menuAction());
         menuFile->addAction(actionNewSketch);
         menuFile->addSeparator();
         menuFile->addAction(actionSaveImage);
@@ -129,6 +141,8 @@ public:
         menuFile->addAction(actionResetCamera);
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
+        menuStep->addAction(actionStepFloor);
+        menuStep->addAction(actionStepWindow);
 
         retranslateUi(MainWindowClass);
 
@@ -165,7 +179,10 @@ public:
         actionResetCamera->setText(QApplication::translate("MainWindowClass", "Reset Camera", 0, QApplication::UnicodeUTF8));
         actionResetCamera->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+R", 0, QApplication::UnicodeUTF8));
         actionOptions->setText(QApplication::translate("MainWindowClass", "Options", 0, QApplication::UnicodeUTF8));
+        actionStepFloor->setText(QApplication::translate("MainWindowClass", "Floor", 0, QApplication::UnicodeUTF8));
+        actionStepWindow->setText(QApplication::translate("MainWindowClass", "Window", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "&File", 0, QApplication::UnicodeUTF8));
+        menuStep->setTitle(QApplication::translate("MainWindowClass", "Step", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

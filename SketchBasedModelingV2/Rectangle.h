@@ -30,7 +30,7 @@ public:
 	boost::shared_ptr<Shape> taper(const std::string& name, float height, float top_ratio = 0.0f);
 	void render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const;
 	bool hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Face& face, float& dist);
-	void findRule(const std::vector<Stroke3D>& strokes3D, RuleSet* ruleSet);
+	void findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, RuleSet* ruleSet);
 };
 
 }
