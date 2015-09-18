@@ -8,6 +8,7 @@
 #include "Rule.h"
 #include "Shape.h"
 #include "Face.h"
+#include <map>
 
 namespace cga {
 
@@ -33,9 +34,12 @@ public:
 	std::vector<boost::shared_ptr<Shape> > shapes;
 	RuleSet ruleSet;
 
+	std::map<std::string, std::vector<Rule> > ruleRepository;
+
 public:
 	CGA();
 
+	void loadRules();
 	void generate();
 	void render(RenderManager* renderManager, bool showScopeCoordinateSystem = false);
 

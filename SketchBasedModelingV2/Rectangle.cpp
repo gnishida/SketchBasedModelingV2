@@ -1,12 +1,6 @@
 ﻿#include "Rectangle.h"
 #include "GLUtils.h"
-#include "Pyramid.h"
-#include "HipRoof.h"
-#include "GableRoof.h"
-#include "Prism.h"
-#include "Polygon.h"
 #include "Cuboid.h"
-#include "OffsetPolygon.h"
 #include "CGA.h"
 #include "Face.h"
 #include <boost/lexical_cast.hpp>
@@ -55,89 +49,6 @@ boost::shared_ptr<Shape> Rectangle::extrude(const std::string& name, float heigh
 	return boost::shared_ptr<Shape>(new Cuboid(name, _pivot, _modelMat, _scope.x, _scope.y, height, _color));
 }
 
-boost::shared_ptr<Shape> Rectangle::inscribeCircle(const std::string& name) {
-	return boost::shared_ptr<Shape>();
-}
-
-boost::shared_ptr<Shape> Rectangle::offset(const std::string& name, float offsetDistance, int offsetSelector) {
-	if (offsetSelector == SELECTOR_ALL) {
-		std::vector<glm::vec2> points(4);
-		points[0] = glm::vec2(0, 0);
-		points[1] = glm::vec2(_scope.x, 0);
-		points[2] = glm::vec2(_scope.x, _scope.y);
-		points[3] = glm::vec2(0, _scope.y);
-
-		return boost::shared_ptr<Shape>(new OffsetPolygon(name, _pivot, _modelMat, points, offsetDistance, _color, _texture));
-	} else if (offsetSelector == SELECTOR_INSIDE) {
-		float offset_width = _scope.x + offsetDistance * 2.0f;
-		float offset_height = _scope.y + offsetDistance * 2.0f;
-		glm::mat4 mat = glm::translate(_modelMat, glm::vec3(-offsetDistance, -offsetDistance, 0));
-		if (_textureEnabled) {
-			float offset_u1 = _texCoords[0].x;
-			float offset_v1 = _texCoords[0].y;
-			float offset_u2 = _texCoords[2].x;
-			float offset_v2 = _texCoords[2].y;
-			if (offsetDistance < 0) {
-				float offset_u1 = (_texCoords[2].x - _texCoords[0].x) * (-offsetDistance) / _scope.x + _texCoords[0].x;
-				float offset_v1 = (_texCoords[2].y - _texCoords[0].y) * (-offsetDistance) / _scope.y + _texCoords[0].y;
-				float offset_u2 = (_texCoords[2].x - _texCoords[0].x) * (_scope.x + offsetDistance) / _scope.x + _texCoords[0].x;
-				float offset_v2 = (_texCoords[2].y - _texCoords[0].y) * (_scope.y + offsetDistance) / _scope.y + _texCoords[0].y;
-			}
-			return boost::shared_ptr<Shape>(new Rectangle(name, _pivot, mat, offset_width, offset_height, _color, _texture, offset_u1, offset_v1, offset_u2, offset_v2));
-		} else {
-			return boost::shared_ptr<Shape>(new Rectangle(name, _pivot, mat, offset_width, offset_height, _color));
-		}
-	} else {
-		throw "border of offset is not supported by rectangle.";
-	}
-}
-
-boost::shared_ptr<Shape> Rectangle::roofGable(const std::string& name, float angle) {
-	std::vector<glm::vec2> points(4);
-	points[0] = glm::vec2(0, 0);
-	points[1] = glm::vec2(_scope.x, 0);
-	points[2] = glm::vec2(_scope.x, _scope.y);
-	points[3] = glm::vec2(0, _scope.y);
-	return boost::shared_ptr<Shape>(new GableRoof(name, _pivot, _modelMat, points, angle, _color));
-}
-
-boost::shared_ptr<Shape> Rectangle::roofHip(const std::string& name, float angle) {
-	std::vector<glm::vec2> points(4);
-	points[0] = glm::vec2(0, 0);
-	points[1] = glm::vec2(_scope.x, 0);
-	points[2] = glm::vec2(_scope.x, _scope.y);
-	points[3] = glm::vec2(0, _scope.y);
-	return boost::shared_ptr<Shape>(new HipRoof(name, _pivot, _modelMat, points, angle, _color));
-}
-
-void Rectangle::setupProjection(int axesSelector, float texWidth, float texHeight) {
-	_texCoords.resize(4);
-	_texCoords[0] = glm::vec2(0, 0);
-	_texCoords[1] = glm::vec2(_scope.x / texWidth, 0);
-	_texCoords[2] = glm::vec2(_scope.x / texWidth, _scope.y / texHeight);
-	_texCoords[3] = glm::vec2(0, _scope.y / texHeight);
-}
-
-boost::shared_ptr<Shape> Rectangle::shapeL(const std::string& name, float frontWidth, float leftWidth) {
-	std::vector<glm::vec2> points(6);
-	points[0] = glm::vec2(0, 0);
-	points[1] = glm::vec2(_scope.x, 0);
-	points[2] = glm::vec2(_scope.x, frontWidth);
-	points[3] = glm::vec2(leftWidth, frontWidth);
-	points[4] = glm::vec2(leftWidth, _scope.y);
-	points[5] = glm::vec2(0, _scope.y);
-
-	return boost::shared_ptr<Shape>(new Polygon(name, _pivot, _modelMat, points, _color, _texture));
-}
-
-void Rectangle::size(float xSize, float ySize, float zSize) {
-	_prev_scope = _scope;
-
-	_scope.x = xSize;
-	_scope.y = ySize;
-	_scope.z = zSize;
-}
-
 void Rectangle::split(int splitAxis, const std::vector<float>& sizes, const std::vector<std::string>& names, std::vector<boost::shared_ptr<Shape> >& objects) {
 	float offset = 0.0f;
 	
@@ -172,15 +83,6 @@ void Rectangle::split(int splitAxis, const std::vector<float>& sizes, const std:
 	}
 }
 
-boost::shared_ptr<Shape> Rectangle::taper(const std::string& name, float height, float top_ratio) {
-	std::vector<glm::vec2> points(4);
-	points[0] = glm::vec2(0, 0);
-	points[1] = glm::vec2(_scope.x, 0);
-	points[2] = glm::vec2(_scope.x, _scope.y);
-	points[3] = glm::vec2(0, _scope.y);
-	return boost::shared_ptr<Shape>(new Pyramid(name, _pivot, _modelMat, points, glm::vec2(_scope.x * 0.5, _scope.y * 0.5), height, top_ratio, _color, _texture));
-}
-
 void Rectangle::render(RenderManager* renderManager, const std::string& name, bool showScopeCoordinateSystem) const {
 	if (_removed) return;
 
@@ -209,7 +111,7 @@ void Rectangle::render(RenderManager* renderManager, const std::string& name, bo
 		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), _color, _texCoords[2]);
 		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), _color, _texCoords[3], 1);
 
-		renderManager->addObject(_name.c_str(), _texture.c_str(), vertices);
+		renderManager->addObject(name.c_str(), _texture.c_str(), vertices);
 	} else {
 		vertices[0] = Vertex(glm::vec3(p1), glm::vec3(normal), _color);
 		vertices[1] = Vertex(glm::vec3(p2), glm::vec3(normal), _color, 1);
@@ -219,7 +121,7 @@ void Rectangle::render(RenderManager* renderManager, const std::string& name, bo
 		vertices[4] = Vertex(glm::vec3(p3), glm::vec3(normal), _color);
 		vertices[5] = Vertex(glm::vec3(p4), glm::vec3(normal), _color, 1);
 
-		renderManager->addObject(_name.c_str(), "", vertices);
+		renderManager->addObject(name.c_str(), "", vertices);
 	}
 	
 	if (showScopeCoordinateSystem) {
@@ -261,15 +163,43 @@ bool Rectangle::hitFace(const glm::vec3& cameraPos, const glm::vec3& viewDir, Fa
 	return hit;
 }
 
-void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, RuleSet* ruleSet) {
+void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step, CGA* cga) {
 	glm::mat4 mat = _pivot * _modelMat;
 	mat = glm::inverse(mat);
 
-	for (int i = 0; i < strokes3D.size(); ++i) {
-		glm::vec3 p1 = glm::vec3(mat * glm::vec4(strokes3D[i].p1, 1));
-		glm::vec3 p2 = glm::vec3(mat * glm::vec4(strokes3D[i].p2, 1));
+	if (sketch_step == STEP_FLOOR) {
+		std::vector<float> floor_y;
+		floor_y.push_back(0);
+		for (int i = 0; i < strokes3D.size(); ++i) {
+			glm::vec3 p1 = glm::vec3(mat * glm::vec4(strokes3D[i].p1, 1));
+			glm::vec3 p2 = glm::vec3(mat * glm::vec4(strokes3D[i].p2, 1));
 
-		if (sketch_step == STEP_FLOOR) {
+			floor_y.push_back((p1.y + p2.y) * 0.5f);
+		}
+
+		std::sort(floor_y.begin(), floor_y.end());
+		
+		std::vector<float> floor_heights;
+		for (int i = 0; i < floor_y.size() - 1; ++i) {
+			if (floor_y[i + 1] - floor_y[i] > 0.5f) {
+				floor_heights.push_back(floor_y[i + 1] - floor_y[i]);
+			}
+		}
+
+		if (floor_heights.size() == 1) {
+			// pattern A*
+			cga->ruleSet.attrs["floor_height"] = boost::lexical_cast<std::string>(floor_heights[0]);
+			cga->ruleSet.rules[_name] = cga->ruleRepository["floors"][0];
+		} else {
+			// pattern { A | B* }
+			cga->ruleSet.attrs["groundf_height"] = boost::lexical_cast<std::string>(floor_heights[0]);
+			cga->ruleSet.attrs["floor_height"] = boost::lexical_cast<std::string>(floor_heights[1]);
+			cga->ruleSet.rules[_name] = cga->ruleRepository["floors"][1];
+		}
+	}
+
+	/*
+
 			if (p1.x < _scope.x * 0.2 && p2.x > _scope.x * 0.8 && fabs(p1.y - p2.y) < _scope.y * 0.3) {
 				float y = (p1.y + p2.y) * 0.5f;
 				if (y < _scope.y * 0.5f) {
@@ -294,9 +224,8 @@ void Rectangle::findRule(const std::vector<Stroke3D>& strokes3D, int sketch_step
 					ruleSet->addOperator(_name, boost::shared_ptr<Operator>(new SplitOperator(DIRECTION_Y, sizes, names)));
 				}
 			}
-		} else {
 		}
-	}
+	*/
 }
 
 }

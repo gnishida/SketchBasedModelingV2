@@ -78,7 +78,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtXml;..\glm;..\glew;..\..\codebase;C:\cgal4.5\include;C:\cgal4.5\auxiliary\gmp\include;..\opencv\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtXml;..\glm;..\glew;C:\cgal4.5\include;C:\cgal4.5\auxiliary\gmp\include;..\opencv\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -112,7 +112,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtXml;..\glm;..\glew;..\..\codebase;C:\cgal4.5\include;C:\cgal4.5\auxiliary\gmp\include;..\opencv\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtXml;..\glm;..\glew;C:\cgal4.5\include;C:\cgal4.5\auxiliary\gmp\include;..\opencv\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -127,20 +127,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Asset.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CenterOperator.cpp" />
     <ClCompile Include="CGA.cpp" />
-    <ClCompile Include="Circle.cpp" />
-    <ClCompile Include="ColorOperator.cpp" />
     <ClCompile Include="CompOperator.cpp" />
     <ClCompile Include="CopyOperator.cpp" />
     <ClCompile Include="Cuboid.cpp" />
     <ClCompile Include="ExtrudeOperator.cpp" />
     <ClCompile Include="Face.cpp" />
-    <ClCompile Include="GableRoof.cpp" />
-    <ClCompile Include="GeneralObject.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_GLWidget3D.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -169,37 +163,20 @@
     </ClCompile>
     <ClCompile Include="GLUtils.cpp" />
     <ClCompile Include="GLWidget3D.cpp" />
-    <ClCompile Include="HipRoof.cpp" />
-    <ClCompile Include="InsertOperator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="NumberEval.cpp" />
-    <ClCompile Include="OBJLoader.cpp" />
-    <ClCompile Include="OffsetOperator.cpp" />
-    <ClCompile Include="OffsetPolygon.cpp" />
     <ClCompile Include="PointCloud.cpp" />
-    <ClCompile Include="Polygon.cpp" />
-    <ClCompile Include="Prism.cpp" />
-    <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="RenderManager.cpp" />
-    <ClCompile Include="RoofGableOperator.cpp" />
-    <ClCompile Include="RoofHipOperator.cpp" />
-    <ClCompile Include="RotateOperator.cpp" />
     <ClCompile Include="Rule.cpp" />
     <ClCompile Include="RuleParser.cpp" />
-    <ClCompile Include="SetupProjectionOperator.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMapping.cpp" />
     <ClCompile Include="Shape.cpp" />
-    <ClCompile Include="ShapeLOperator.cpp" />
-    <ClCompile Include="SizeOperator.cpp" />
     <ClCompile Include="SketchyRenderingBuffer.cpp" />
     <ClCompile Include="SplitOperator.cpp" />
     <ClCompile Include="Stroke3D.cpp" />
-    <ClCompile Include="TaperOperator.cpp" />
-    <ClCompile Include="TextureOperator.cpp" />
-    <ClCompile Include="TranslateOperator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -210,7 +187,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing MainWindow.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-I.\..\..\codebase" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing MainWindow.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -218,7 +195,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing MainWindow.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-I.\..\..\codebase" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -243,51 +220,28 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Asset.h" />
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CenterOperator.h" />
     <ClInclude Include="CGA.h" />
-    <ClInclude Include="Circle.h" />
-    <ClInclude Include="ColorOperator.h" />
     <ClInclude Include="CompOperator.h" />
     <ClInclude Include="CopyOperator.h" />
     <ClInclude Include="Cuboid.h" />
     <ClInclude Include="ExtrudeOperator.h" />
     <ClInclude Include="Face.h" />
-    <ClInclude Include="GableRoof.h" />
-    <ClInclude Include="GeneralObject.h" />
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
     <ClInclude Include="GLUtils.h" />
-    <ClInclude Include="HipRoof.h" />
-    <ClInclude Include="InsertOperator.h" />
     <ClInclude Include="NumberEval.h" />
-    <ClInclude Include="OBJLoader.h" />
-    <ClInclude Include="OffsetOperator.h" />
-    <ClInclude Include="OffsetPolygon.h" />
     <ClInclude Include="PointCloud.h" />
-    <ClInclude Include="Polygon.h" />
-    <ClInclude Include="Prism.h" />
-    <ClInclude Include="Pyramid.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="RenderManager.h" />
-    <ClInclude Include="RoofGableOperator.h" />
-    <ClInclude Include="RoofHipOperator.h" />
-    <ClInclude Include="RotateOperator.h" />
     <ClInclude Include="Rule.h" />
     <ClInclude Include="RuleParser.h" />
-    <ClInclude Include="SetupProjectionOperator.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMapping.h" />
     <ClInclude Include="Shape.h" />
-    <ClInclude Include="ShapeLOperator.h" />
-    <ClInclude Include="SizeOperator.h" />
     <ClInclude Include="SketchyRenderingBuffer.h" />
     <ClInclude Include="SplitOperator.h" />
     <ClInclude Include="Stroke3D.h" />
-    <ClInclude Include="TaperOperator.h" />
-    <ClInclude Include="TextureOperator.h" />
-    <ClInclude Include="TranslateOperator.h" />
     <ClInclude Include="Vertex.h" />
     <CustomBuild Include="GLWidget3D.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -297,7 +251,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing GLWidget3D.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-I.\..\..\codebase" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing GLWidget3D.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -305,7 +259,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing GLWidget3D.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-I.\..\..\codebase" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB  "-I$(BOOST_ROOT)\." "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I.\..\glm" "-I.\..\glew" "-IC:\cgal4.5\include" "-IC:\cgal4.5\auxiliary\gmp\include" "-I.\..\opencv\include"</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

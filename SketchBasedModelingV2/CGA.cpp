@@ -1,12 +1,30 @@
 ﻿#include "CGA.h"
 #include "GLUtils.h"
-#include "OBJLoader.h"
 #include <map>
 #include <iostream>
+#include <QDir>
+#include "RuleParser.h"
 
 namespace cga {
 
 CGA::CGA() {
+}
+
+void CGA::loadRules() {
+	// load floor rules
+	QDir dir("../cga/floors");
+	QStringList filters;
+	filters << "*.xml";
+	QFileInfoList fileInfoList = dir.entryInfoList(filters, QDir::Files|QDir::NoDotAndDotDot);
+	for (int i = 0; i < fileInfoList.size(); ++i) {
+		Rule rule;
+		parseRule(fileInfoList[i].absoluteFilePath().toUtf8().constData(), rule);
+
+		ruleRepository["floors"].push_back(rule);
+	}
+
+	// load window rules
+	// ...
 }
 
 void CGA::generate() {

@@ -1,6 +1,5 @@
 ﻿#include "Cuboid.h"
 #include "Rectangle.h"
-#include "Polygon.h"
 #include "CGA.h"
 #include "GLUtils.h"
 
@@ -72,17 +71,6 @@ void Cuboid::comp(const std::map<std::string, std::string>& name_map, std::vecto
 		mat = glm::translate(glm::rotate(glm::translate(_modelMat, glm::vec3(_scope.x, 0, 0)), M_PI, glm::vec3(0, 0, 1)), glm::vec3(0, -_scope.y, 0));
 		shapes.push_back(boost::shared_ptr<Shape>(new Rectangle(name_map.at("side"), _pivot, glm::rotate(mat, M_PI * 0.5f, glm::vec3(1, 0, 0)), _scope.x, _scope.z, _color)));
 	}
-}
-
-void Cuboid::setupProjection(float texWidth, float texHeight) {
-}
-
-void Cuboid::size(float xSize, float ySize, float zSize) {
-	_prev_scope = _scope;
-
-	_scope.x = xSize;
-	_scope.y = ySize;
-	_scope.z = zSize;
 }
 
 /**

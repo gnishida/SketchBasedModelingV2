@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<rule name="A*">
+	<split splitAxis="y">
+		<param type="floating" value="floor_height" name="Floor" repeat="true"/>
+	</split>
+</rule>

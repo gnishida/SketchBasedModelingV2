@@ -2,7 +2,6 @@
 #include <iostream>
 #include "RuleParser.h"
 #include "Rectangle.h"
-#include "Polygon.h"
 #include "GLUtils.h"
 #include "Face.h"
 
@@ -23,6 +22,9 @@ GLWidget3D::GLWidget3D(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers
 
 	// initial sketch step
 	sketch_step = cga::STEP_FLOOR;
+
+	// load rules
+	cga_system.loadRules();
 }
 
 void GLWidget3D::keyPressEvent(QKeyEvent *e) {
@@ -91,7 +93,7 @@ void GLWidget3D::inferRuleFromSketch() {
 		}
 
 		// strokeから、ルールを探す
-		face.shape->findRule(strokes3D, sketch_step, &cga_system.ruleSet);
+		face.shape->findRule(strokes3D, sketch_step, &cga_system);
 
 		// CGAモデルを生成しなおす
 		cga_system.generate();
@@ -343,11 +345,11 @@ void GLWidget3D::initializeGL() {
 
 
 	// CGA initial mass
-	cga::Rectangle* lot = new cga::Rectangle("Lot", glm::translate(glm::rotate(glm::mat4(), (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0)), glm::vec3(-10, -17.5, 0)), glm::mat4(), 20, 35, glm::vec3(1, 1, 1));
+	cga::Rectangle* lot = new cga::Rectangle("Lot", glm::translate(glm::rotate(glm::mat4(), (float)(-M_PI * 0.5f), glm::vec3(1, 0, 0)), glm::vec3(-17.5, -12.5, 0)), glm::mat4(), 35, 25, glm::vec3(1, 1, 1));
 	cga_system.axiom = boost::shared_ptr<cga::Shape>(lot);
 
 	try {
-		cga::parseRule("../cga/simpleMass.xml", cga_system.ruleSet);
+		cga::parseRules("../cga/simpleMass.xml", cga_system.ruleSet);
 		cga_system.generate();
 		cga_system.render(&renderManager, true);
 	} catch (const char* ex) {
