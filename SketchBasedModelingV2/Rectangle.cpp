@@ -248,12 +248,12 @@ void Rectangle::findRule(const std::vector<Stroke>& strokes, int sketch_step, CG
 			ruleSet.rules[_name] = startRule;
 
 			float tile_margin = (bboxes[1].minPt.x - bboxes[0].maxPt.x) * 0.5f;
-			ruleSet.attrs["floor_horizontal_margin"] = boost::lexical_cast<std::string>(bboxes[0].minPt.x - tile_margin);
-			ruleSet.attrs["tile_width1"] = boost::lexical_cast<std::string>(bboxes[0].sx() + tile_margin);
-			ruleSet.attrs["tile_width2"] = boost::lexical_cast<std::string>(bboxes[1].sx() + tile_margin);
+			ruleSet.attrs["floor_horizontal_margin"] = boost::lexical_cast<std::string>(max(0, bboxes[0].minPt.x - tile_margin));
+			ruleSet.attrs["tile_width1"] = boost::lexical_cast<std::string>(bboxes[0].sx() + tile_margin * 2.0f);
+			ruleSet.attrs["tile_width2"] = boost::lexical_cast<std::string>(bboxes[1].sx() + tile_margin * 2.0f);
 			ruleSet.attrs["tile_horizontal_margin"] = boost::lexical_cast<std::string>(tile_margin);
-			ruleSet.attrs["tile_vertical_margin1"] = boost::lexical_cast<std::string>(bboxes[0].minPt.y);
-			ruleSet.attrs["tile_vertical_margin2"] = boost::lexical_cast<std::string>(_scope.y - bboxes[0].maxPt.y);
+			ruleSet.attrs["tile_vertical_margin1"] = boost::lexical_cast<std::string>((bboxes[0].minPt.y + bboxes[1].minPt.y) * 0.5f);
+			ruleSet.attrs["tile_vertical_margin2"] = boost::lexical_cast<std::string>(_scope.y - (bboxes[0].maxPt.y + bboxes[1].maxPt.y) * 0.5f);
 
 			cga->proposedRuleSet.merge(ruleSet);
 		}
