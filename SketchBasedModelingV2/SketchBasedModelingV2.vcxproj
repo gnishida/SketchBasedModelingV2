@@ -166,7 +166,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="NumberEval.cpp" />
-    <ClCompile Include="PointCloud.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Rule.cpp" />
@@ -230,7 +229,6 @@
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
     <ClInclude Include="GLUtils.h" />
     <ClInclude Include="NumberEval.h" />
-    <ClInclude Include="PointCloud.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Rule.h" />

@@ -148,25 +148,32 @@ void RuleSet::addOperator(const std::string& name, const boost::shared_ptr<Opera
  * @return				変換された数値
  */
 float RuleSet::evalFloat(const std::string& attr_name, const boost::shared_ptr<Shape>& shape) const {
-	// To be fixed
-	// 置換だと、変数BCが、変数ABCを置換してしまう。
-	// 対策は？
+	myeval::calculator<std::string::const_iterator> calc;
 
-	// scope.sx|y|zを置換
-	std::string decoded_str = attr_name;
-	std::string scope_x = std::to_string((long double)shape->_scope.x);
-	std::string scope_y = std::to_string((long double)shape->_scope.y);
-	std::string scope_z = std::to_string((long double)shape->_scope.z);
-	boost::replace_all(decoded_str, "scope.sx", scope_x);
-	boost::replace_all(decoded_str, "scope.sy", scope_y);
-	boost::replace_all(decoded_str, "scope.sz", scope_z);
+	myeval::variables.clear();
+	myeval::variables.add("scope.sx", shape->_scope.x);
+	myeval::variables.add("scope.sy", shape->_scope.y);
+	myeval::variables.add("scope.sz", shape->_scope.z);
 
-	// 変数を置換
 	for (auto it = attrs.begin(); it != attrs.end(); ++it) {
-		boost::replace_all(decoded_str, it->first, it->second);
+		float val;
+		if (sscanf(it->second.c_str(), "%f", &val) != EOF) {
+			myeval::variables.add(it->first, val);
+		}
 	}
 
-	return calculate(decoded_str);
+	float result;
+	std::string::const_iterator iter = attr_name.begin();
+	std::string::const_iterator end = attr_name.end();
+	bool r = phrase_parse(iter, end, calc, boost::spirit::ascii::space, result);
+	if (r && iter == end) {
+		return result;
+	} else {
+		std::string rest(iter, end);
+		std::cout << "Parsing failed\n";
+		std::cout << "stopped at: \": " << rest << "\"\n";
+		throw "Parsing failed\nstpped at: \": " + rest + "\"\n";
+	}
 }
 
 /**
